@@ -13,3 +13,5 @@ app.listen(4000, () => {
 });
 
 startRogerEbertReviewService();
+
+module.exports = app;
