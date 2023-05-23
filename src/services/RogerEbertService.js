@@ -76,7 +76,9 @@ const createReview = async ({
       console.log("Review created:", response.data.data.id);
     }
   } catch (error) {
-    console.error(`Error creating review: ${error}`);
+    console.error(`Error creating review:`);
+    console.error(error.response.data);
+    console.error(error.response.status);
   }
 };
 
@@ -114,7 +116,9 @@ async function processReview() {
       console.log("Review already exist:", fullUrl);
     }
   } catch (error) {
-    console.error(`Error processing review : ${error}`);
+    console.error(`Error processing review :`);
+    console.error(error.response.data);
+    console.error(error.response.status);
   } finally {
     setTimeout(processReview, 86400000); // 24 horas
   }

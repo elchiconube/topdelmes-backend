@@ -66,7 +66,9 @@ exports.handleTopRequest = async (req, res) => {
       }
     }
   } catch (error) {
-    console.error(`Error: ${error}`);
+    console.error(error.response.data);
+    console.error(error.response.status);
+
     if (error.response && error.response.status === 404) {
       res.status(404).send({ message: "Not Found" });
     } else {
