@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "dev": "dotenv -e .env.local -- nodemon src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "start:production": "dotenv -e .env.production -- node src/index.js"
   },
   "keywords": [],
   "author": "Oscar Bustos",
