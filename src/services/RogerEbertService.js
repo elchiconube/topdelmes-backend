@@ -105,7 +105,7 @@ async function processReview() {
           body: convertToMarkdown(review.body, review?.content),
           url: fullUrl,
           content,
-          author: [1],
+          author: 1,
         });
       } else {
         console.log("No content found", review);
