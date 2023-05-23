@@ -1,16 +1,14 @@
 {
   "name": "topdelmes-content-generator",
   "version": "1.0.0",
-  "description": "Generate content for topdelmes.com",
-  "main": "src/index.js",
+  "main": "index.js",
+  "author": "Oscar Bustos",
+  "license": "ISC",
   "scripts": {
     "dev": "dotenv -e .env.local -- nodemon src/index.js",
     "start": "node src/index.js",
     "start:production": "dotenv -e .env.production -- node src/index.js"
   },
-  "keywords": [],
-  "author": "Oscar Bustos",
-  "license": "ISC",
   "dependencies": {
     "axios": "^1.4.0",
     "cheerio": "^1.0.0-rc.12",
