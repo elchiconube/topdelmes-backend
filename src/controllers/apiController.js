@@ -43,8 +43,14 @@ exports.handleTopRequest = async (req, res) => {
     if (topFromServer) {
       res.send(topFromServer);
     } else {
-      const imdbData = await scrapeIMDB({ title_type, year, month });
+      const imdbMovies = await scrapeIMDB({ title_type: "movie", year, month });
+      const imdbSeries = await scrapeIMDB({
+        title_type: "tv_series",
+        year,
+        month,
+      });
 
+      const imdbData = [...imdbMovies, ...imdbSeries];
       const contents = await manageContentOnStrapi(imdbData);
 
       const top = await postTopToStrapi({
