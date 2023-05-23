@@ -52,9 +52,11 @@ const getReviewFromAI = async ({
       json = JSON5.parse(data);
       return json;
     } catch (error) {
-      console.error("Error parsing the response:", error);
+      console.error("Error parsing the response:");
+      console.error(error.response.data);
+      console.error(error.response.status);
       console.error("Full response:", data);
-      throw new Error("No se ha podido transformar el JSON", error);
+      throw new Error("No se ha podido transformar el JSON", response.data);
     }
   } catch (error) {
     console.error(`Error calling OpenAI API: ${error}`);

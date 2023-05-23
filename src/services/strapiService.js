@@ -141,7 +141,9 @@ const checkIfReviewExistOnStrapi = async (reviewUrl) => {
     );
     return !response.data.data.length > 0;
   } catch (error) {
-    console.error("Error searching review:", error);
+    console.error("Error searching review:");
+    console.error(error.response.data);
+    console.error(error.response.status);
     return true;
   }
 };
@@ -158,7 +160,10 @@ const searchTopFromStrapi = async ({ month, year }) => {
 
     return response.data?.data[0];
   } catch (error) {
-    console.error("Error searching top:", error);
+    console.error("Error searching top:");
+    console.error(error.response.data);
+    console.error(error.response.status);
+
     return null;
   }
 };
@@ -171,7 +176,10 @@ const getTopFromStrapi = async ({ topId }) => {
     );
     return response.data?.data;
   } catch (error) {
-    console.error("Error getting top:", error);
+    console.error("Error getting top:");
+    console.error(error.response.data);
+    console.error(error.response.status);
+
     return null;
   }
 };
