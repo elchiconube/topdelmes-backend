@@ -22,11 +22,18 @@ const INITIAL_MESSAGES = [
   },
 ];
 
+const logError = (error, context = "") => {
+  console.error(`Error ${context}`);
+  console.error(error.response?.data);
+  console.error(error.response?.status);
+};
+
 const getReviewFromAI = async ({
   title: reviewTitle,
   content: reviewContent,
 }) => {
   try {
+    console.log(`Getting review from AI for title: ${reviewTitle}`);
     const openai = new OpenAIApi(configuration);
 
     const completion = await Promise.race([
@@ -45,21 +52,21 @@ const getReviewFromAI = async ({
       ), // 2 minutes timeout
     ]);
 
+    console.log("Received response from AI.");
     const data = completion.data.choices[0].message?.content ?? "";
     let json;
 
     try {
       json = JSON5.parse(data);
+      console.log("Parsed response successfully.");
       return json;
     } catch (error) {
       console.error("Error parsing the response:");
-      console.error(error.response.data);
-      console.error(error.response.status);
       console.error("Full response:", data);
       throw new Error("No se ha podido transformar el JSON", response.data);
     }
   } catch (error) {
-    console.error(`Error calling OpenAI API: ${error}`);
+    logError(error, "calling OpenAI API");
     throw error;
   }
 };
