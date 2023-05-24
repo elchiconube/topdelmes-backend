@@ -220,7 +220,25 @@ const getTopFromStrapi = async ({ topId }) => {
   }
 };
 
+const postReviewOnStrapi = async (data) => {
+  try {
+    const response = await axios.post(
+      `${process.env.STRAPI_URL}/reviews`,
+      {
+        data,
+      },
+      config
+    );
+
+    return response.data?.data;
+  } catch (error) {
+    logError(error, "creating review on Strapi");
+    return null;
+  }
+};
+
 module.exports = {
+  postReviewOnStrapi,
   postTopToStrapi,
   manageContentOnStrapi,
   getContentFromStrapi,
