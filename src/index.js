@@ -3,6 +3,7 @@ const apiRoutes = require("./api");
 const {
   startRogerEbertReviewService,
 } = require("./services/RogerEbertService");
+const { startScrapingService } = require("./services/scrapingService");
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
+startScrapingService();
 startRogerEbertReviewService();
 
 module.exports = app;
