@@ -8,38 +8,61 @@ const {
 } = require("./strapiService");
 const { getReviewFromAI } = require("./iaService");
 
+// Log error helper
+const logError = (error, context = "") => {
+  console.error(`Error ${context}`);
+  console.error(error.response?.data);
+  console.error(error.response?.status);
+};
+
 const checkUrl = async () => {
-  let response = await axios.get("https://www.rogerebert.com/streaming");
-  let $ = cheerio.load(response.data);
+  try {
+    let response = await axios.get("https://www.rogerebert.com/streaming");
+    let $ = cheerio.load(response.data);
 
-  const platforms = ["Netflix", "HBO", "Apple", "Prime Video", "Disney", "Sky"];
-  let newItem = null;
+    const platforms = [
+      "Netflix",
+      "HBO",
+      "Apple",
+      "Prime Video",
+      "Disney",
+      "Sky",
+    ];
+    let newItem = null;
 
-  $(".page-content--block").each((i, el) => {
-    const blockText = $(el).text();
-    if (platforms.some((platform) => blockText.includes(platform))) {
-      newItem = $(el).find(".blog-split--title").attr("href");
-      return false; // break the loop
-    }
-  });
+    $(".page-content--block").each((i, el) => {
+      const blockText = $(el).text();
+      if (platforms.some((platform) => blockText.includes(platform))) {
+        newItem = $(el).find(".blog-split--title").attr("href");
+        return false; // break the loop
+      }
+    });
 
-  return newItem;
+    return newItem;
+  } catch (error) {
+    logError(error, "checking URL");
+  }
 };
 
 const getReviewInfo = async (url) => {
-  let response = await axios.get(url);
-  let $ = cheerio.load(response.data);
+  try {
+    let response = await axios.get(url);
+    let $ = cheerio.load(response.data);
 
-  const title = $(".page-content--title").text().replace(/\n/g, "");
-  const content = $(".page-content--block_editor-content")
-    .text()
-    .replace(/[+,]/g, "")
-    .replace(/\n/g, "");
-  const imageUrl = $(".page-content--primary-image img").attr("src");
-  const videoUrl = $('iframe[title="YouTube video player"]').attr("src");
+    const title = $(".page-content--title").text().replace(/\n/g, "");
+    const content = $(".page-content--block_editor-content")
+      .text()
+      .replace(/[+,]/g, "")
+      .replace(/\n/g, "");
+    const imageUrl = $(".page-content--primary-image img").attr("src");
+    const videoUrl = $('iframe[title="YouTube video player"]').attr("src");
 
-  return { title, content, imageUrl, videoUrl };
+    return { title, content, imageUrl, videoUrl };
+  } catch (error) {
+    logError(error, "getting review info");
+  }
 };
+
 const createReview = async ({
   reviewInfo,
   review,
@@ -76,9 +99,7 @@ const createReview = async ({
       console.log("Review created:", response.data.data.id);
     }
   } catch (error) {
-    console.error(`Error creating review:`);
-    console.error(error.response.data);
-    console.error(error.response.status);
+    logError(error, "creating review");
   }
 };
 
@@ -116,9 +137,7 @@ async function processReview() {
       console.log("Review already exist:", fullUrl);
     }
   } catch (error) {
-    console.error(`Error processing review :`);
-    console.error(error.response.data);
-    console.error(error.response.status);
+    logError(error, "processing review");
   } finally {
     setTimeout(processReview, 86400000); // 24 horas
   }

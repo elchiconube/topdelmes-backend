@@ -1,60 +1,88 @@
 const axios = require("axios");
 const { slugify, config } = require("../utils/helper");
 
+const logError = (error, context = "") => {
+  console.error(`Error ${context}`);
+  console.error(error.response?.data);
+  console.error(error.response?.status);
+};
+
 const postTopToStrapi = async ({ year, month, contents }) => {
-  const serverUrl = `${process.env.STRAPI_URL}/tops?populate=*`;
+  try {
+    const serverUrl = `${process.env.STRAPI_URL}/tops?populate=*`;
 
-  const response = await axios.post(
-    serverUrl,
-    {
-      data: {
-        year,
-        month,
-        contents,
+    const response = await axios.post(
+      serverUrl,
+      {
+        data: {
+          year,
+          month,
+          contents,
+        },
       },
-    },
-    config
-  );
+      config
+    );
 
-  return response.data.data;
+    return response.data.data;
+  } catch (error) {
+    logError(error, "posting top to Strapi");
+    return null;
+  }
 };
 
 const searchContentFromStrapi = async ({ slug }) => {
-  const response = await axios.get(
-    `${process.env.STRAPI_URL}/contents?filters[slug][$eq]=${slug}`,
-    config
-  );
+  try {
+    const response = await axios.get(
+      `${process.env.STRAPI_URL}/contents?filters[slug][$eq]=${slug}`,
+      config
+    );
 
-  if (response.data.data.length > 0) {
-    return response.data.data[0];
-  } else {
-    return null;
+    if (response.data.data.length > 0) {
+      return response.data.data[0];
+    }
+  } catch (error) {
+    logError(error, "searching content from Strapi");
   }
+
+  return null;
 };
 
 const updateContentOnStrapi = async ({ id, item }) => {
-  const response = await axios.put(`${process.env.STRAPI_URL}/contents/${id}`, {
-    data: item,
-    config,
-  });
+  try {
+    const response = await axios.put(
+      `${process.env.STRAPI_URL}/contents/${id}`,
+      {
+        data: item,
+        config,
+      }
+    );
 
-  if (response.data.data.length > 0) {
-    return response.data.data.id;
-  } else {
-    return null;
+    if (response.data.data.length > 0) {
+      return response.data.data.id;
+    }
+  } catch (error) {
+    logError(error, "updating content on Strapi");
   }
+
+  return null;
 };
 
 const postContentToStrapi = async ({ item }) => {
-  const response = await axios.post(
-    `${process.env.STRAPI_URL}/contents`,
-    {
-      data: item,
-    },
-    config
-  );
+  try {
+    const response = await axios.post(
+      `${process.env.STRAPI_URL}/contents`,
+      {
+        data: item,
+      },
+      config
+    );
 
-  return response.data.data.id;
+    return response.data.data.id;
+  } catch (error) {
+    logError(error, "posting content to Strapi");
+  }
+
+  return null;
 };
 
 const manageContentOnStrapi = async (data) => {
@@ -69,15 +97,11 @@ const manageContentOnStrapi = async (data) => {
       const updateId = await updateContentOnStrapi({ id: content.id, item });
       if (updateId) {
         ids.push(updateId);
-      } else {
-        console.error(`Error updating content ${item.id}`);
       }
     } else {
       const contentId = await postContentToStrapi({ item });
       if (contentId) {
         ids.push(contentId);
-      } else {
-        console.error(`Error creating content ${item.id}`);
       }
     }
   }
@@ -86,50 +110,65 @@ const manageContentOnStrapi = async (data) => {
 };
 
 const getContentFromStrapi = async (title) => {
-  const response = await axios.get(
-    `${process.env.STRAPI_URL}/contents?filters[title][$containsi]=${title}`,
-    config
-  );
+  try {
+    const response = await axios.get(
+      `${process.env.STRAPI_URL}/contents?filters[title][$containsi]=${title}`,
+      config
+    );
 
-  return {
-    id: response.data?.data[0]?.id,
-    type:
-      response.data?.data[0]?.attributes?.type === "movie"
-        ? "pelicula"
-        : "serie",
-  };
+    return {
+      id: response.data?.data[0]?.id,
+      type:
+        response.data?.data[0]?.attributes?.type === "movie"
+          ? "pelicula"
+          : "serie",
+    };
+  } catch (error) {
+    logError(error, "getting content from Strapi");
+    return null;
+  }
 };
 
 const createPlatformOnStrapi = async (title) => {
-  const response = await axios.post(`${process.env.STRAPI_URL}/platforms`, {
-    data: {
-      title,
-      slug: slugify(title),
-    },
-  });
+  try {
+    const response = await axios.post(
+      `${process.env.STRAPI_URL}/platforms`,
+      {
+        data: {
+          title,
+          slug: slugify(title),
+        },
+      },
+      config
+    );
 
-  return response.data?.data;
+    return response.data?.data;
+  } catch (error) {
+    logError(error, "creating platform on Strapi");
+    return null;
+  }
 };
 
 const getPlatformFromStrapi = async (title) => {
-  const response = await axios.get(
-    `${process.env.STRAPI_URL}/platforms?filters[slug][$containsi]=${slugify(
-      title
-    )}`,
-    config
-  );
+  try {
+    const response = await axios.get(
+      `${process.env.STRAPI_URL}/platforms?filters[slug][$containsi]=${slugify(
+        title
+      )}`,
+      config
+    );
 
-  if (response.data.data.length) {
-    return {
-      id: response.data?.data[0]?.id,
-      title: response.data?.data[0]?.attributes.title,
-    };
-  } else {
-    const newPlatform = createPlatformOnStrapi(title);
-    return {
-      id: newPlatform.id,
-      title: newPlatform.attributes.title,
-    };
+    if (response.data.data.length) {
+      return {
+        id: response.data?.data[0]?.id,
+        title: response.data?.data[0]?.attributes.title,
+      };
+    }
+
+    return await createPlatformOnStrapi(title);
+  } catch (error) {
+    logError(error, "getting platform from Strapi");
+    return null;
   }
 };
 
@@ -139,11 +178,13 @@ const checkIfReviewExistOnStrapi = async (reviewUrl) => {
       `${process.env.STRAPI_URL}/reviews?filters[url][$eq]=${reviewUrl}`,
       config
     );
+
     return !response.data.data.length > 0;
   } catch (error) {
-    console.error("Error searching review:");
-    console.error(error.response.data);
-    console.error(error.response.status);
+    logError(
+      error,
+      `checking if review exists on Strapi with URL ${reviewUrl}`
+    );
     return true;
   }
 };
@@ -160,10 +201,7 @@ const searchTopFromStrapi = async ({ month, year }) => {
 
     return response.data?.data[0];
   } catch (error) {
-    console.error("Error searching top:");
-    console.error(error.response.data);
-    console.error(error.response.status);
-
+    logError(error, "searching top from Strapi");
     return null;
   }
 };
@@ -174,12 +212,10 @@ const getTopFromStrapi = async ({ topId }) => {
       `${process.env.STRAPI_URL}/tops/${topId}?populate=*`,
       config
     );
+
     return response.data?.data;
   } catch (error) {
-    console.error("Error getting top:");
-    console.error(error.response.data);
-    console.error(error.response.status);
-
+    logError(error, "getting top from Strapi");
     return null;
   }
 };

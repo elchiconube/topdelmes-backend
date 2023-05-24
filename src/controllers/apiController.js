@@ -6,6 +6,12 @@ const {
 } = require("../services/strapiService");
 
 const validateDate = (title_type, year, month) => {
+  if (!title_type) {
+    throw new Error(
+      "El title_type es obligatorio debe de ser movie o tv_series"
+    );
+  }
+
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1; // JavaScript's getMonth() method returns a value from 0-11, so we need to add 1 to make it from 1-12
 
@@ -41,7 +47,10 @@ exports.handleTopRequest = async (req, res) => {
     const topFromServer = await searchTopFromStrapi({ month, year });
 
     if (topFromServer) {
-      res.send(topFromServer);
+      const result = topFromServer.attributes.contents.data.filter(
+        (content) => content.attributes.type === title_type
+      );
+      res.send(result);
     } else {
       const imdbMovies = await scrapeIMDB({ title_type: "movie", year, month });
       const imdbSeries = await scrapeIMDB({
@@ -60,19 +69,27 @@ exports.handleTopRequest = async (req, res) => {
       });
 
       if (top) {
-        res.send(top);
+        const result = top.attributes.contents.data.filter(
+          (content) => content.attributes.type === title_type
+        );
+
+        res.send(result);
       } else {
         throw new Error("Unable to create new TOP content");
       }
     }
   } catch (error) {
-    console.error(error.response.data);
-    console.error(error.response.status);
-
-    if (error.response && error.response.status === 404) {
-      res.status(404).send({ message: "Not Found" });
+    if (error.response) {
+      console.error(error.response.data);
+      console.error(error.response.status);
+      if (error.response.status === 404) {
+        res.status(404).send({ message: "Not Found" });
+      } else {
+        res.status(500).send({ message: "Internal Server Error" });
+      }
     } else {
-      res.status(500).send({ message: "Internal Server Error" });
+      // Este error debe haber venido de validateDate
+      res.status(400).send({ message: error.message });
     }
   }
 };
