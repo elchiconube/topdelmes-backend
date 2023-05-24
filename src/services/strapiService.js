@@ -53,8 +53,8 @@ const updateContentOnStrapi = async ({ id, item }) => {
       `${process.env.STRAPI_URL}/contents/${id}`,
       {
         data: item,
-        config,
-      }
+      },
+      config
     );
 
     if (response.data.data.length > 0) {
