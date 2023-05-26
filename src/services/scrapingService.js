@@ -1,13 +1,14 @@
 const axios = require("axios");
 
 function startScrapingService() {
-  let year = 2023;
+  let year = 1991;
   let month = 4;
 
   const interval = setInterval(() => {
-    const url = `${process.env.API_URL}/tv_series/${year}/${String(
-      month
-    ).padStart(2, "0")}`;
+    const url = `${process.env.API_URL}/movie/${year}/${String(month).padStart(
+      2,
+      "0"
+    )}`;
 
     console.log(`Iniciando petición para el año ${year} y mes ${month}...`);
 
