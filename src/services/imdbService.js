@@ -1,5 +1,5 @@
 const cheerio = require("cheerio");
-const { slugify } = require("../utils/helper");
+const { slugify, maxLength } = require("../utils/helper");
 const axios = require("axios");
 
 const getHtml = async (url) => {
@@ -8,6 +8,7 @@ const getHtml = async (url) => {
       headers: {
         "User-Agent":
           "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1",
+        "Accept-Language": "es-ES,es;q=0.8,en-US;q=0.6,en;q=0.4",
       },
     });
     return response.data;
@@ -107,11 +108,13 @@ const scrapeIMDB = async ({ title_type, year, month }) => {
           "data-value",
           (value) => parseFloat(value.trim())
         ),
-        description: getElementData(
-          $(el),
-          ".lister-item-content p:nth-of-type(2)",
-          null,
-          (value) => value.trim()
+        description: maxLength(
+          getElementData(
+            $(el),
+            ".lister-item-content p:nth-of-type(2)",
+            null,
+            (value) => value.trim()
+          )
         ),
         poster: getElementData(
           $(el),

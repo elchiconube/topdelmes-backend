@@ -20,6 +20,14 @@ const convertToMarkdown = (body, workName) => {
   return markdownContent;
 };
 
+const maxLength = (text, length = 255) => {
+  if (text.length > length) {
+    return text.slice(0, length);
+  } else {
+    return text;
+  }
+};
+
 const createReviewSlug = ({ title, type, platform }) => {
   let slug = `critica-review-${slugify(title)}`;
 
@@ -42,6 +50,7 @@ const config = {
 };
 
 module.exports = {
+  maxLength,
   convertToMarkdown,
   createReviewSlug,
   slugify,
