@@ -1,20 +1,16 @@
-const { createReviewSlug, convertToMarkdown } = require("../utils/helper");
+const {
+  convertToMarkdown,
+  logError,
+  createReview,
+} = require("../utils/helper");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const {
   getContentFromStrapi,
   getPlatformFromStrapi,
   checkIfReviewExistOnStrapi,
-  postReviewOnStrapi,
 } = require("./strapiService");
 const { getReviewFromAI } = require("./iaService");
-
-// Log error helper
-const logError = (error, context = "") => {
-  console.error(`Error ${context}`);
-  console.error(error.response?.data);
-  console.error(error.response?.status);
-};
 
 const checkUrl = async () => {
   try {
@@ -64,50 +60,7 @@ const getReviewInfo = async (url) => {
   }
 };
 
-const createReview = async ({
-  reviewInfo,
-  review,
-  platform,
-  body,
-  url,
-  content,
-  author,
-  contentName,
-}) => {
-  try {
-    if (review) {
-      const contentId = content?.id;
-      const contentType = content?.type;
-      const platformId = platform?.id;
-
-      const data = {
-        title: review.title,
-        body,
-        slug: createReviewSlug({
-          title: contentName,
-          type: contentType,
-          platform: platform.title,
-        }),
-        image: reviewInfo.imageUrl,
-        trailer: reviewInfo.videoUrl,
-        director: review.director,
-        rate: parseInt(review.rate),
-        author,
-        url,
-        ...(contentId && { contents: [contentId] }),
-        ...(platformId && { platform: platformId }),
-      };
-
-      const response = await postReviewOnStrapi(data);
-
-      console.log("Review created:", response.id);
-    }
-  } catch (error) {
-    logError(error, "creating review");
-  }
-};
-
-async function processReview() {
+async function startRogerEbertReviewService() {
   try {
     const reviewUrl = await checkUrl();
 
@@ -143,13 +96,7 @@ async function processReview() {
     }
   } catch (error) {
     logError(error, "processing review");
-  } finally {
-    setTimeout(processReview, 86400000); // 24 horas
   }
-}
-
-function startRogerEbertReviewService() {
-  processReview(); // Start the first run
 }
 
 module.exports = { startRogerEbertReviewService };
