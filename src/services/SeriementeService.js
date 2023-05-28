@@ -14,13 +14,15 @@ const { getReviewFromAI } = require("./iaService");
 
 const checkUrl = async () => {
   try {
-    let response = await axios.get("https://martincid.com/es/cine/criticas/");
+    let response = await axios.get(
+      "https://tv.libertaddigital.com/seriemente.html"
+    );
     let $ = cheerio.load(response.data);
 
     let newItem = null;
 
-    $(".blog-list").each((i, el) => {
-      newItem = $(el).find(".post-item-title a").attr("href");
+    $("article.result").each((i, el) => {
+      newItem = $(el).find("a").attr("href");
       return false; // break the loop
     });
 
@@ -35,11 +37,11 @@ const getReviewInfo = async (url) => {
     let response = await axios.get(url);
     let $ = cheerio.load(response.data);
 
-    const title = $(".post-title.post-item-title").text().replace(/\n/g, "");
+    const title = $(".interior h1").text().replace(/\n/g, "");
 
     let content = "";
 
-    $(".entry-content p").each((i, el) => {
+    $(".body p").each((i, el) => {
       content += $(el)
         .text()
         .replace(/[+,]/g, "")
@@ -47,10 +49,8 @@ const getReviewInfo = async (url) => {
         .replace(/\t/g, "");
     });
 
-    const imageUrl = $(".image-element.thumbnail-inner img").attr(
-      "data-lazy-src"
-    );
-    const videoUrl = $(".rll-youtube-player").attr("data-src");
+    const imageUrl = null;
+    const videoUrl = null;
 
     return { title, content, imageUrl, videoUrl };
   } catch (error) {
@@ -58,7 +58,7 @@ const getReviewInfo = async (url) => {
   }
 };
 
-async function startMartinCidReviewService() {
+async function startSeriementeReviewService() {
   try {
     const reviewUrl = await checkUrl();
 
@@ -82,7 +82,7 @@ async function startMartinCidReviewService() {
           url: reviewUrl,
           content,
           contentName: review?.content,
-          author: 2,
+          author: 3,
         });
       } else {
         console.log("No content found", review);
@@ -95,4 +95,4 @@ async function startMartinCidReviewService() {
   }
 }
 
-module.exports = { startMartinCidReviewService };
+module.exports = { startSeriementeReviewService };
