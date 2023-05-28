@@ -1,8 +1,8 @@
 const axios = require("axios");
 
 function startScrapingService() {
-  let year = 1991;
-  let month = 4;
+  let year = 2023;
+  let month = 5;
 
   const interval = setInterval(() => {
     const url = `${process.env.API_URL}/movie/${year}/${String(month).padStart(

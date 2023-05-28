@@ -4,6 +4,7 @@ const {
   startRogerEbertReviewService,
 } = require("./services/RogerEbertService");
 const { startScrapingService } = require("./services/scrapingService");
+const { startMartinCidReviewService } = require("./services/MartinCidService");
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.listen(port, () => {
 
 startScrapingService();
 startRogerEbertReviewService();
+startMartinCidReviewService();
 
 module.exports = app;
