@@ -88,7 +88,7 @@ async function startSeriementeReviewService() {
         console.log("No content found", review);
       }
     } else {
-      console.log("Review already exist:", fullUrl);
+      console.log("Review already exist:", reviewUrl);
     }
   } catch (error) {
     logError(error, "processing review");

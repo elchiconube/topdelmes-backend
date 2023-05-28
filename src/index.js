@@ -47,6 +47,9 @@ const runServicesInSequence = async () => {
 };
 
 //startScrapingService();
+// startRogerEbertReviewService();
+// startMartinCidReviewService();
+// startSeriementeReviewService();
 
 runServicesInSequence();
 
