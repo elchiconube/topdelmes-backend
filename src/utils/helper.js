@@ -10,8 +10,8 @@ const msToTime = (ms) => {
 };
 
 const getRandomDelay = () => {
-  const minDelay = 2 * 60 * 60 * 1000;
-  const maxDelay = 5 * 60 * 60 * 1000;
+  const minDelay = 1 * 60 * 60 * 1000;
+  const maxDelay = 3 * 60 * 60 * 1000;
   return Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
 };
 
