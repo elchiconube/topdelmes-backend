@@ -1,6 +1,14 @@
 const { postReviewOnStrapi } = require("../services/strapiService");
 const slugify = require("./slugify");
 
+const msToTime = (ms) => {
+  let seconds = ms / 1000;
+  let hours = parseInt(seconds / 3600);
+  seconds = seconds % 3600;
+  let minutes = parseInt(seconds / 60);
+  return `${hours} horas y ${minutes} minutos`;
+};
+
 const getRandomDelay = () => {
   const minDelay = 2 * 60 * 60 * 1000; // 2 horas en milisegundos
   const maxDelay = 5 * 60 * 60 * 1000; // 5 horas en milisegundos
@@ -95,4 +103,5 @@ module.exports = {
   getRandomDelay,
   createReview,
   logError,
+  msToTime,
 };
