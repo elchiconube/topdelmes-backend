@@ -49,8 +49,8 @@ const runServicesInSequence = async () => {
 // startScrapingService();
 // startRogerEbertReviewService();
 // startMartinCidReviewService();
-// startSeriementeReviewService();
+startSeriementeReviewService();
 
-runServicesInSequence();
+//runServicesInSequence();
 
 module.exports = app;

@@ -1,20 +1,11 @@
+const { postReviewOnStrapi } = require("../services/strapiService");
+const slugify = require("./slugify");
+
 const getRandomDelay = () => {
   const minDelay = 2 * 60 * 60 * 1000; // 2 horas en milisegundos
   const maxDelay = 5 * 60 * 60 * 1000; // 5 horas en milisegundos
   return Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
 };
-
-const slugify = (text) =>
-  text &&
-  text
-    .toString()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w-]+/g, "")
-    .replace(/--+/g, "-");
 
 const convertToMarkdown = (body, workName) => {
   let markdownContent = "";
@@ -46,13 +37,6 @@ const createReviewSlug = ({ title, type, platform }) => {
   }
 
   return slug;
-};
-
-const config = {
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
-  },
 };
 
 const logError = (error, context = "") => {
@@ -108,8 +92,6 @@ module.exports = {
   maxLength,
   convertToMarkdown,
   createReviewSlug,
-  slugify,
-  config,
   getRandomDelay,
   createReview,
   logError,

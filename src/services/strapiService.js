@@ -1,5 +1,6 @@
 const axios = require("axios");
-const { slugify, config } = require("../utils/helper");
+const axiosConfig = require("../utils/axiosConfig");
+const slugify = require("../utils/slugify");
 
 const logError = (error, context = "") => {
   console.error(`Error ${context}`);
@@ -20,7 +21,7 @@ const postTopToStrapi = async ({ year, month, contents }) => {
           contents,
         },
       },
-      config
+      axiosConfig
     );
 
     return response.data.data;
@@ -34,7 +35,7 @@ const searchContentFromStrapi = async ({ slug }) => {
   try {
     const response = await axios.get(
       `${process.env.STRAPI_URL}/contents?filters[slug][$eq]=${slug}`,
-      config
+      axiosConfig
     );
 
     if (response.data.data.length > 0) {
@@ -54,7 +55,7 @@ const updateContentOnStrapi = async ({ id, item }) => {
       {
         data: item,
       },
-      config
+      axiosConfig
     );
 
     if (response.data.data.length > 0) {
@@ -74,7 +75,7 @@ const postContentToStrapi = async ({ item }) => {
       {
         data: item,
       },
-      config
+      axiosConfig
     );
 
     return response.data.data.id;
@@ -113,7 +114,7 @@ const getContentFromStrapi = async (title) => {
   try {
     const response = await axios.get(
       `${process.env.STRAPI_URL}/contents?filters[title][$containsi]=${title}`,
-      config
+      axiosConfig
     );
 
     return {
@@ -139,7 +140,7 @@ const createPlatformOnStrapi = async (title) => {
           slug: slugify(title),
         },
       },
-      config
+      axiosConfig
     );
 
     return response.data?.data;
@@ -155,7 +156,7 @@ const getPlatformFromStrapi = async (title) => {
       `${process.env.STRAPI_URL}/platforms?filters[slug][$containsi]=${slugify(
         title
       )}`,
-      config
+      axiosConfig
     );
 
     if (response.data.data.length) {
@@ -176,7 +177,7 @@ const checkIfReviewExistOnStrapi = async (reviewUrl) => {
   try {
     let response = await axios.get(
       `${process.env.STRAPI_URL}/reviews?filters[url][$eq]=${reviewUrl}`,
-      config
+      axiosConfig
     );
 
     return !response.data.data.length > 0;
@@ -197,7 +198,7 @@ const searchTopFromStrapi = async ({ month, year }) => {
       url += `&filters[$and][1][month][$eq]=${month}`;
     }
 
-    const response = await axios.get(url, config);
+    const response = await axios.get(url, axiosConfig);
 
     return response.data?.data[0];
   } catch (error) {
@@ -210,7 +211,7 @@ const getTopFromStrapi = async ({ topId }) => {
   try {
     const response = await axios.get(
       `${process.env.STRAPI_URL}/tops/${topId}?populate=*`,
-      config
+      axiosConfig
     );
 
     return response.data?.data;
@@ -227,7 +228,7 @@ const postReviewOnStrapi = async (data) => {
       {
         data,
       },
-      config
+      axiosConfig
     );
 
     return response.data?.data;
