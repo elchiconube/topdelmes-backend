@@ -1,6 +1,7 @@
 const cheerio = require("cheerio");
-const { slugify, maxLength } = require("../utils/helper");
+const { maxLength } = require("../utils/helper");
 const axios = require("axios");
+const slugify = require("../utils/slugify");
 
 const getHtml = async (url) => {
   try {
