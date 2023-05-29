@@ -8,6 +8,29 @@ const logError = (error, context = "") => {
   console.error(error.response?.status);
 };
 
+const updateTopToStrapi = async ({ id, year, month, contents }) => {
+  try {
+    const serverUrl = `${process.env.STRAPI_URL}/tops/${id}`;
+
+    const response = await axios.put(
+      serverUrl,
+      {
+        data: {
+          year,
+          month,
+          contents,
+        },
+      },
+      axiosConfig
+    );
+
+    return response.data.data;
+  } catch (error) {
+    logError(error, "posting top to Strapi");
+    return null;
+  }
+};
+
 const postTopToStrapi = async ({ year, month, contents }) => {
   try {
     const serverUrl = `${process.env.STRAPI_URL}/tops?populate=*`;
@@ -58,7 +81,7 @@ const updateContentOnStrapi = async ({ id, item }) => {
       axiosConfig
     );
 
-    if (response.data.data.length > 0) {
+    if (response?.data?.data?.id) {
       return response.data.data.id;
     }
   } catch (error) {
@@ -96,11 +119,13 @@ const manageContentOnStrapi = async (data) => {
 
     if (content) {
       const updateId = await updateContentOnStrapi({ id: content.id, item });
+
       if (updateId) {
         ids.push(updateId);
       }
     } else {
       const contentId = await postContentToStrapi({ item });
+
       if (contentId) {
         ids.push(contentId);
       }
@@ -247,4 +272,5 @@ module.exports = {
   checkIfReviewExistOnStrapi,
   searchTopFromStrapi,
   getTopFromStrapi,
+  updateTopToStrapi,
 };
