@@ -26,9 +26,7 @@ const runServicesInSequence = async () => {
   console.log("Finished RogerEbertReviewService.");
 
   const delay1 = getRandomDelay();
-  console.log(
-    `Waiting for ${msToTime(delay1)}ms before starting next service.`
-  );
+  console.log(`Waiting for ${msToTime(delay1)} before starting next service.`);
   setTimeout(async () => {
     console.log("Starting MartinCidReviewService...");
     await startMartinCidReviewService();
@@ -36,7 +34,7 @@ const runServicesInSequence = async () => {
 
     const delay2 = getRandomDelay();
     console.log(
-      `Waiting for ${msToTime(delay2)}ms before starting next service.`
+      `Waiting for ${msToTime(delay2)} before starting next service.`
     );
     setTimeout(async () => {
       console.log("Starting SeriementeReviewService...");
@@ -45,7 +43,7 @@ const runServicesInSequence = async () => {
 
       const delay3 = getRandomDelay();
       console.log(
-        `Waiting for ${msToTime(delay3)}ms before starting next service.`
+        `Waiting for ${msToTime(delay3)} before starting next service.`
       );
       setTimeout(runServicesInSequence, delay3);
     }, delay2);
