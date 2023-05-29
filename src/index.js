@@ -9,6 +9,7 @@ const {
   startSeriementeReviewService,
 } = require("./services/SeriementeService");
 const { getRandomDelay, msToTime } = require("./utils/helper");
+const { dailyUpdate } = require("./services/dailyUpdateService");
 
 const app = express();
 
@@ -54,6 +55,10 @@ const runServicesInSequence = async () => {
 // startRogerEbertReviewService();
 // startMartinCidReviewService();
 // startSeriementeReviewService();
+
+setInterval(() => {
+  dailyUpdate();
+}, 1000 * 60 * 60 * 24);
 
 runServicesInSequence();
 
