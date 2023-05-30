@@ -51,20 +51,22 @@ const runServicesInSequence = async () => {
   }, delay1);
 };
 
+const runDailyUpdate = async () => {
+  console.log("Starting daily update...");
+  await dailyUpdate();
+  console.log("Finished daily update.");
+
+  const delay = getRandomDelay();
+  console.log(`Waiting for ${msToTime(delay)} before starting next update.`);
+  setTimeout(runDailyUpdate, delay);
+};
+
 // startScrapingService();
 // startRogerEbertReviewService();
 // startMartinCidReviewService();
 // startSeriementeReviewService();
 
-setInterval(() => {
-  console.log("Running daily update...");
-  dailyUpdate()
-    .then(() => console.log("Finished daily update."))
-    .catch((error) => console.log(error, "Error running daily update."));
-}, getRandomDelay());
-
-runServicesInSequence()
-  .then(() => console.log("Finished all services."))
-  .catch((error) => console.log(error, "Error running services."));
+runDailyUpdate();
+runServicesInSequence();
 
 module.exports = app;
