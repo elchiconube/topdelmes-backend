@@ -57,9 +57,14 @@ const runServicesInSequence = async () => {
 // startSeriementeReviewService();
 
 setInterval(() => {
-  dailyUpdate();
-}, 1000 * 60 * 60 * 24);
+  console.log("Running daily update...");
+  dailyUpdate()
+    .then(() => console.log("Finished daily update."))
+    .catch((error) => console.log(error, "Error running daily update."));
+}, getRandomDelay());
 
-runServicesInSequence();
+runServicesInSequence()
+  .then(() => console.log("Finished all services."))
+  .catch((error) => console.log(error, "Error running services."));
 
 module.exports = app;
