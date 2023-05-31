@@ -77,6 +77,7 @@ const createReview = async ({
           type: contentType,
           platform: platform.title,
         }),
+        description: review.description,
         image: reviewInfo.imageUrl,
         trailer: reviewInfo.videoUrl,
         director: review.director,
