@@ -12,20 +12,15 @@ const createTop = async ({ year, month }) => {
     "0"
   )}`;
 
-  console.log(`Iniciando petición para el año ${year} y mes ${month}...`);
+  console.log(`Creating top for year: ${year}/${month}...`);
 
   axios
     .get(url)
     .then(() => {
-      console.log(
-        `La petición para el año ${year} y mes ${month} ha finalizado exitosamente.`
-      );
+      console.log(`Request for top ${year}/${month}  was sent successfully`);
     })
     .catch((error) => {
-      // Manejo de errores
-      console.error("Error en la petición:", error);
-      console.log("Se ha quedado en el año:", year);
-      console.log("Mes:", month);
+      console.error(`Error creating top: ${year}/${month}`, error);
     });
 };
 
@@ -57,7 +52,7 @@ const dailyUpdate = async () => {
     });
 
     if (top) {
-      console.log("Top actualizado exitosamente");
+      console.log(`Top ${month}/${year} updated!`);
     }
   } else {
     createTop({ year, month });
