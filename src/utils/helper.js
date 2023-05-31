@@ -62,7 +62,6 @@ const createReview = async ({
   content,
   author,
   contentName,
-  description,
 }) => {
   try {
     if (review) {
