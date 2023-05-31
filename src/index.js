@@ -10,6 +10,9 @@ const {
 } = require("./services/SeriementeService");
 const { getRandomDelay, msToTime } = require("./utils/helper");
 const { dailyUpdate } = require("./services/dailyUpdateService");
+const {
+  startEspinofPeliculaService,
+} = require("./services/EspinofPeliculasService");
 
 const app = express();
 
@@ -46,7 +49,17 @@ const runServicesInSequence = async () => {
       console.log(
         `Waiting for ${msToTime(delay3)} before starting next service.`
       );
-      setTimeout(runServicesInSequence, delay3);
+      setTimeout(async () => {
+        console.log("Starting EspinofPeliculaService...");
+        await startEspinofPeliculaService();
+        console.log("Finished EspinofPeliculaService.");
+
+        const delay4 = getRandomDelay();
+        console.log(
+          `Waiting for ${msToTime(delay4)} before starting next service.`
+        );
+        setTimeout(runServicesInSequence, delay4);
+      }, delay3);
     }, delay2);
   }, delay1);
 };
@@ -65,6 +78,7 @@ const runDailyUpdate = async () => {
 // startRogerEbertReviewService();
 // startMartinCidReviewService();
 // startSeriementeReviewService();
+// startEspinofPeliculaService();
 
 runDailyUpdate();
 runServicesInSequence();
