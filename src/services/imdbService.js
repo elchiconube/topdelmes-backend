@@ -128,7 +128,7 @@ const scrapeIMDB = async ({ title_type, year, month }) => {
           $(el),
           ".sort-num_votes-visible span:nth-of-type(2)",
           null,
-          (value) => parseInt(value.trim().replace(",", ""))
+          (value) => parseInt(value.trim().replace(".", ""))
         ),
         runtime: getElementData($(el), ".runtime", null, (value) =>
           parseInt(value.trim().replace(" min", ""))
