@@ -62,6 +62,7 @@ const createReview = async ({
   content,
   author,
   contentName,
+  description,
 }) => {
   try {
     if (review) {
@@ -77,6 +78,7 @@ const createReview = async ({
           type: contentType,
           platform: platform.title,
         }),
+        description: review.description,
         image: reviewInfo.imageUrl,
         trailer: reviewInfo.videoUrl,
         director: review.director,
