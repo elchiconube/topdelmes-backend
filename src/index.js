@@ -1,6 +1,5 @@
 const express = require("express");
 const apiRoutes = require("./api");
-//const { startScrapingService } = require("./services/scrapingService");
 const {
   startRogerEbertReviewService,
 } = require("./services/RogerEbertService");
@@ -15,6 +14,9 @@ const {
   startEspinofPeliculaService,
 } = require("./services/EspinofPeliculasService");
 const { startProcessingUrls } = require("./services/CinemaGaviaClassicService");
+const {
+  startScrapingByYearService,
+} = require("./services/scrapingByYearService");
 
 const app = express();
 
@@ -90,18 +92,21 @@ const runYearlyUpdate = async () => {
   setTimeout(runYearlyUpdate, delay);
 };
 
-// startScrapingService();
+// startScrapingByMonthService();
 // startRogerEbertReviewService();
 // startMartinCidReviewService();
 // startSeriementeReviewService();
 // startEspinofPeliculaService();
 
+// CLASSIC CINEMA GAVIA
 //const urls = [];
-
 //startProcessingUrls(urls);
 
-runYearlyUpdate();
-runDailyUpdate();
-runServicesInSequence();
+startScrapingByYearService();
+
+// CURRENT RUNS
+//runYearlyUpdate();
+//runDailyUpdate();
+//runServicesInSequence();
 
 module.exports = app;

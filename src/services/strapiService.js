@@ -31,7 +31,7 @@ const updateTopToStrapi = async ({ id, year, month, contents }) => {
   }
 };
 
-const postTopToStrapi = async ({ year, month, contents }) => {
+const postTopToStrapi = async ({ year, month = null, contents }) => {
   try {
     const serverUrl = `${process.env.STRAPI_URL}/tops?populate=*`;
 
