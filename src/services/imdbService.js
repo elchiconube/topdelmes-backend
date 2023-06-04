@@ -53,12 +53,25 @@ const buildIMDBUrl = ({ title_type, month, year }) => {
   let start_date = "";
   let end_date = "";
 
+  const currentDate = new Date();
+  const currentDay = currentDate.getDate();
+  const currentMonth = currentDate.getMonth() + 1;
+  const currentYear = currentDate.getFullYear();
+
   if (month && year) {
     start_date = `${year}-${month}-01`;
-    end_date = `${year}-${month}-${new Date(year, month, 0).getDate()}`;
+    if (year == currentYear && month == currentMonth) {
+      end_date = `${year}-${month}-${currentDay}`;
+    } else {
+      end_date = `${year}-${month}-${new Date(year, month, 0).getDate()}`;
+    }
   } else if (year) {
     start_date = `${year}-01-01`;
-    end_date = `${year}-12-31`;
+    if (year == currentYear) {
+      end_date = `${year}-${currentMonth}-${currentDay}`;
+    } else {
+      end_date = `${year}-12-31`; // Si no, se usa el último día del año proporcionado
+    }
   }
 
   let imdbUrl = "https://www.imdb.com/search/title/?title_type=" + title_type;
