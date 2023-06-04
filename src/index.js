@@ -10,7 +10,7 @@ const {
 } = require("./services/SeriementeService");
 const { getRandomDelay, msToTime } = require("./utils/helper");
 const { dailyUpdate } = require("./services/dailyUpdateService");
-const { yearlyUpdate } = require("./services/yearlyUpdateService");
+const { yearlyUpdate } = require("./services/YearlyUpdateService");
 const {
   startEspinofPeliculaService,
 } = require("./services/EspinofPeliculasService");
