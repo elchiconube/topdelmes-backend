@@ -9,9 +9,9 @@ const msToTime = (ms) => {
   return `${hours} hours y ${minutes} minutes`;
 };
 
-const getRandomDelay = () => {
-  const minDelay = 1 * 60 * 60 * 1000;
-  const maxDelay = 3 * 60 * 60 * 1000;
+const getRandomDelay = (long = false) => {
+  const minDelay = long ? 18 * 60 * 60 * 1000 : 1 * 60 * 60 * 1000;
+  const maxDelay = long ? 24 * 60 * 60 * 1000 : 3 * 60 * 60 * 1000;
   return Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
 };
 

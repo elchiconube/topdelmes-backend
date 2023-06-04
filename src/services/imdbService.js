@@ -65,13 +65,6 @@ const buildIMDBUrl = ({ title_type, month, year }) => {
     } else {
       end_date = `${year}-${month}-${new Date(year, month, 0).getDate()}`;
     }
-  } else if (year) {
-    start_date = `${year}-01-01`;
-    if (year == currentYear) {
-      end_date = `${year}-${currentMonth}-${currentDay}`;
-    } else {
-      end_date = `${year}-12-31`; // Si no, se usa el último día del año proporcionado
-    }
   }
 
   let imdbUrl = "https://www.imdb.com/search/title/?title_type=" + title_type;

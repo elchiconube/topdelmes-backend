@@ -217,10 +217,12 @@ const checkIfReviewExistOnStrapi = async (reviewUrl) => {
 
 const searchTopFromStrapi = async ({ month, year }) => {
   try {
-    let url = `${process.env.STRAPI_URL}/tops?filters[$and][0][year][$eq]=${year}&populate=*`;
+    let url = `${process.env.STRAPI_URL}/tops?filters[$and][0][year][$eq]=${year}`;
 
     if (month) {
-      url += `&filters[$and][1][month][$eq]=${month}`;
+      url += `&filters[$and][1][month][$eq]=${month}&populate=*`;
+    } else {
+      url += `&filters[$and][1][month][$null]=null&populate=*`;
     }
 
     const response = await axios.get(url, axiosConfig);
