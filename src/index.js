@@ -10,6 +10,7 @@ const {
 } = require("./services/SeriementeService");
 const { getRandomDelay, msToTime } = require("./utils/helper");
 const { dailyUpdate } = require("./services/dailyUpdateService");
+const { yearlyUpdate } = require("./services/yearlyUpdateService");
 const {
   startEspinofPeliculaService,
 } = require("./services/EspinofPeliculasService");
@@ -71,8 +72,22 @@ const runDailyUpdate = async () => {
   console.log("Finished daily update.");
 
   const delay = getRandomDelay();
-  console.log(`Waiting for ${msToTime(delay)} before starting next update.`);
+  console.log(
+    `Waiting for ${msToTime(delay)} before starting next daily update.`
+  );
   setTimeout(runDailyUpdate, delay);
+};
+
+const runYearlyUpdate = async () => {
+  console.log("Starting yearly update...");
+  await yearlyUpdate();
+  console.log("Finished yearly update.");
+
+  const delay = getRandomDelay(true);
+  console.log(
+    `Waiting for ${msToTime(delay)} before starting next yearly update.`
+  );
+  setTimeout(runYearlyUpdate, delay);
 };
 
 // startScrapingService();
@@ -85,6 +100,7 @@ const runDailyUpdate = async () => {
 
 //startProcessingUrls(urls);
 
+runYearlyUpdate();
 runDailyUpdate();
 runServicesInSequence();
 
