@@ -19,7 +19,7 @@ const checkUrl = async () => {
 
     let newItem = null;
 
-    $(".blog-list").each((i, el) => {
+    $(".blog-grid").each((i, el) => {
       newItem = $(el).find(".post-item-title a").attr("href");
       return false; // break the loop
     });
