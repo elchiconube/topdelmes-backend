@@ -102,11 +102,12 @@ const runYearlyUpdate = async () => {
 //const urls = [];
 //startProcessingUrls(urls);
 
-startScrapingByYearService();
+// UPDATE SERVICES
+//startScrapingByYearService();
+runDailyUpdate();
+//runYearlyUpdate();
 
 // CURRENT RUNS
-//runYearlyUpdate();
-//runDailyUpdate();
-//runServicesInSequence();
+runServicesInSequence();
 
 module.exports = app;
