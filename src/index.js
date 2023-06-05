@@ -17,6 +17,7 @@ const { startProcessingUrls } = require("./services/CinemaGaviaClassicService");
 const {
   startScrapingByYearService,
 } = require("./services/scrapingByYearService");
+const { runIAYearService } = require("./services/iaYearService");
 
 const app = express();
 
@@ -104,10 +105,13 @@ const runYearlyUpdate = async () => {
 
 // UPDATE SERVICES
 //startScrapingByYearService();
-runDailyUpdate();
+//runDailyUpdate();
 //runYearlyUpdate();
 
 // CURRENT RUNS
-runServicesInSequence();
+//runServicesInSequence();
+
+//YEAR IA SERVICE
+runIAYearService();
 
 module.exports = app;
