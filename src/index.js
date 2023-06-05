@@ -105,13 +105,13 @@ const runYearlyUpdate = async () => {
 
 // UPDATE SERVICES
 //startScrapingByYearService();
-//runDailyUpdate();
 //runYearlyUpdate();
 
 // CURRENT RUNS
-//runServicesInSequence();
+runServicesInSequence();
+runDailyUpdate();
 
 //YEAR IA SERVICE
-runIAYearService();
+//runIAYearService();
 
 module.exports = app;
