@@ -13,26 +13,28 @@ const updateTopDescriptionsToStrapi = async ({
   description_series,
   description_movies,
 }) => {
-  const { id } = await searchTopFromStrapi({ year });
+  const currentTop = await searchTopFromStrapi({ year });
 
-  try {
-    const serverUrl = `${process.env.STRAPI_URL}/tops/${id}`;
+  if (currentTop) {
+    try {
+      const serverUrl = `${process.env.STRAPI_URL}/tops/${currentTop.id}`;
 
-    const response = await axios.put(
-      serverUrl,
-      {
-        data: {
-          description_series,
-          description_movies,
+      const response = await axios.put(
+        serverUrl,
+        {
+          data: {
+            description_series,
+            description_movies,
+          },
         },
-      },
-      axiosConfig
-    );
+        axiosConfig
+      );
 
-    return response.data.data;
-  } catch (error) {
-    logError(error, "updating descriptions on top to Strapi");
-    return null;
+      return response.data.data;
+    } catch (error) {
+      logError(error, "updating descriptions on top to Strapi");
+      return null;
+    }
   }
 };
 
