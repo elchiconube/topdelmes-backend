@@ -25,6 +25,7 @@ async function getChronicFromAI(year) {
   try {
     const completion = await Promise.race([
       openai.createChatCompletion({
+        max_tokens: 200,
         model: "gpt-3.5-turbo",
         messages: [
           ...getInitialMessages(year),
