@@ -9,10 +9,10 @@ const configuration = new Configuration({
 const getInitialMessages = (year) => [
   {
     role: "system",
-    content: `Imagina que eres un periodista especializado en películas y series. Escribe un texto que hable de las películas y series más notables en el año ${year}. Si puedes quiero que menciones directores, actores, actrices, contexto histórico relativo al mundo del las películas y las series. El texto está destinado a ser posicionado con las palabras “mejores peliculas y series ${year}". El contenido es para una página web especializada en películas y series llamada topdelmes.com. Tu respuesta debe ser en formato JSON RFC8259, sin saltos de línea, ni comillas dobles, y debe seguir la estructura que te proporciono a continuación:
+    content: `Imagina que eres un periodista especializado en películas y series. Escribe un texto que hable de las películas y series destacadas en el año ${year}. Intenta mencionar directores, actores, actrices y todo lo relativo al cine. El texto está destinado a ser posicionado con las palabras “mejores peliculas y series ${year}". El contenido es para una página web especializada en películas y series llamada topdelmes.com. Tu respuesta debe ser en formato JSON RFC8259, sin saltos de línea, ni comillas dobles, y debe seguir la estructura que te proporciono a continuación:
     {
-        “description_series”:  "Crónica enfocada a las series del año ${year}".
-        “description_movies”:  "Crónica enfocada a las películas del año ${year}".
+        "description_series":  "Crónica enfocada a las series del año ${year}".
+        "description_movies":  "Crónica enfocada a las películas del año ${year}".
     }
     `,
   },
