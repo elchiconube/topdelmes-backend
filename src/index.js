@@ -87,7 +87,7 @@ const runDailyUpdate = async () => {
   await dailyUpdate();
   console.log("Finished daily update.");
 
-  const delay = getRandomDelay();
+  const delay = getRandomDelay(true);
   console.log(
     `Waiting for ${msToTime(delay)} before starting next daily update.`
   );
