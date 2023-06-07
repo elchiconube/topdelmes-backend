@@ -18,6 +18,9 @@ const {
   startScrapingByYearService,
 } = require("./services/scrapingByYearService");
 const { runIAYearService } = require("./services/iaYearService");
+const {
+  startElSeptimoArteReviewService,
+} = require("./services/ElSeptimoArteService");
 
 const app = express();
 
@@ -63,7 +66,17 @@ const runServicesInSequence = async () => {
         console.log(
           `Waiting for ${msToTime(delay4)} before starting next service.`
         );
-        setTimeout(runServicesInSequence, delay4);
+        setTimeout(async () => {
+          console.log("Starting ElSeptimoArteReviewService...");
+          await startElSeptimoArteReviewService();
+          console.log("Finished ElSeptimoArteReviewService.");
+
+          const delay5 = getRandomDelay();
+          console.log(
+            `Waiting for ${msToTime(delay5)} before starting next service.`
+          );
+          setTimeout(runServicesInSequence, delay5);
+        }, delay4);
       }, delay3);
     }, delay2);
   }, delay1);
@@ -98,14 +111,15 @@ const runYearlyUpdate = async () => {
 // startMartinCidReviewService();
 // startSeriementeReviewService();
 // startEspinofPeliculaService();
+// startElSeptimoArteReviewService,
 
 // CLASSIC CINEMA GAVIA
 //const urls = [];
 //startProcessingUrls(urls);
 
 // UPDATE SERVICES
-//startScrapingByYearService();
-//runYearlyUpdate();
+// startScrapingByYearService();
+// runYearlyUpdate();
 
 // CURRENT RUNS
 runServicesInSequence();
