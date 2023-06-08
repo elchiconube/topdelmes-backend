@@ -75,10 +75,7 @@ async function startElSeptimoArteReviewService() {
 
       const reviewInfo = await getReviewInfo(reviewUrl);
 
-      console.log(reviewInfo);
-      // const review = await getReviewFromAI(reviewInfo);
-
-      const review = false;
+      const review = await getReviewFromAI(reviewInfo);
 
       const platform = await getPlatformFromStrapi(review?.platform);
       const content = await getContentFromStrapi(review?.content);
