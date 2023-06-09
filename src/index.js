@@ -100,6 +100,7 @@ const runYearlyUpdate = async () => {
   console.log("Finished yearly update.");
 
   const delay = getRandomDelay(true);
+
   console.log(
     `Waiting for ${msToTime(delay)} before starting next yearly update.`
   );
@@ -119,7 +120,7 @@ const runYearlyUpdate = async () => {
 
 // UPDATE SERVICES
 // startScrapingByYearService();
-// runYearlyUpdate();
+runYearlyUpdate();
 
 // CURRENT RUNS
 runServicesInSequence();
