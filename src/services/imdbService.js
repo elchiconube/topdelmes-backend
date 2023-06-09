@@ -71,11 +71,10 @@ const buildIMDBUrl = ({ title_type, month, year }) => {
 
   if (start_date && end_date) {
     imdbUrl += "&release_date=" + start_date + "," + end_date;
+    imdbUrl += "&start=1&ref_=adv_nxt";
   } else if (year) {
     imdbUrl += "&year=" + year;
   }
-
-  imdbUrl += "&start=1&ref_=adv_nxt";
 
   return imdbUrl;
 };
@@ -86,8 +85,6 @@ const scrapeIMDB = async ({ title_type, year, month }) => {
   }
 
   const url = buildIMDBUrl({ title_type, year, month });
-
-  console.log({ url });
 
   try {
     const html = await getHtml(url);
