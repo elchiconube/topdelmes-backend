@@ -92,6 +92,7 @@ const scrapeIMDB = async ({ title_type, year, month }) => {
     const data = [];
 
     $(".lister-item.mode-advanced").each((i, el) => {
+      const position = i + 1;
       const imdb_url = getElementData(
         $(el),
         ".lister-item-header a",
