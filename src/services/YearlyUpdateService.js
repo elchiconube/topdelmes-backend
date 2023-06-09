@@ -35,7 +35,9 @@ const yearlyUpdate = async () => {
       year,
     });
 
-    const imdbData = [...imdbMovies, ...imdbSeries];
+    const imdbData = [...imdbMovies, ...imdbSeries].sort(
+      (a, b) => a.position - b.position
+    );
     const contents = await manageContentOnStrapi(imdbData);
 
     const top = await updateTopToStrapi({

@@ -145,6 +145,8 @@ const manageContentOnStrapi = async (data) => {
   for (const item of data) {
     const slug = slugify(item.title);
 
+    delete item.position;
+
     const content = await searchContentFromStrapi({ slug });
 
     if (content) {
