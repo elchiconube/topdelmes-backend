@@ -53,12 +53,12 @@ const buildIMDBUrl = ({ title_type, month, year }) => {
   let start_date = "";
   let end_date = "";
 
-  const currentDate = new Date();
-  const currentDay = currentDate.getDate();
-  const currentMonth = currentDate.getMonth() + 1;
-  const currentYear = currentDate.getFullYear();
-
   if (month && year) {
+    const currentDate = new Date();
+    const currentDay = currentDate.getDate();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentYear = currentDate.getFullYear();
+
     start_date = `${year}-${month}-01`;
     if (year == currentYear && month == currentMonth) {
       end_date = `${year}-${month}-${currentDay}`;
