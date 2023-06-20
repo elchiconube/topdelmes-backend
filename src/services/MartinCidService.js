@@ -14,13 +14,15 @@ const { getReviewFromAI } = require("./iaService");
 
 const checkUrl = async () => {
   try {
-    let response = await axios.get("https://martincid.com/es/cine/criticas/");
+    let response = await axios.get("https://martincid.com/es/");
     let $ = cheerio.load(response.data);
 
     let newItem = null;
 
-    $(".blog-list").each((i, el) => {
-      newItem = $(el).find(".post-item-title a").attr("href");
+    $(
+      "#wi-content > div > div > div > section.elementor-section.elementor-top-section.elementor-element.elementor-element-feed7e3.elementor-section-boxed.elementor-section-height-default.elementor-section-height-default > div > div > div > div.elementor-element.elementor-element-605b70f.align-left.pagination-align-center.elementor-widget.elementor-widget-post-grid > div > div > div"
+    ).each((i, el) => {
+      newItem = $(el).find(".thumbnail-inner a").attr("href");
       return false; // break the loop
     });
 
