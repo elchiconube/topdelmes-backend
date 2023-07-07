@@ -38,7 +38,7 @@ const getReviewFromAI = async ({
 
     const completion = await Promise.race([
       openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4",
         messages: [
           ...INITIAL_MESSAGES,
           {
