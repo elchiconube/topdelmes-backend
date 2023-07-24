@@ -2,6 +2,7 @@ const {
   convertToMarkdown,
   logError,
   createReview,
+  removeQueryParams,
 } = require("../utils/helper");
 const axios = require("axios");
 const cheerio = require("cheerio");
@@ -86,7 +87,7 @@ async function startElSeptimoArteReviewService() {
           review,
           platform,
           body: convertToMarkdown(review.body, review?.content),
-          url: reviewUrl,
+          url: removeQueryParams(reviewUrl),
           content,
           contentName: review?.content,
           author: 6,
