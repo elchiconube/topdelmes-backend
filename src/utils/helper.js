@@ -9,6 +9,12 @@ const msToTime = (ms) => {
   return `${hours} hours y ${minutes} minutes`;
 };
 
+const removeQueryParams = (url) => {
+  let urlObj = new URL(url);
+  urlObj.search = "";
+  return urlObj.toString();
+};
+
 const getRandomDelay = (long = false) => {
   const minDelay = long ? 18 * 60 * 60 * 1000 : 1 * 60 * 60 * 1000;
   const maxDelay = long ? 24 * 60 * 60 * 1000 : 3 * 60 * 60 * 1000;
@@ -105,4 +111,5 @@ module.exports = {
   createReview,
   logError,
   msToTime,
+  removeQueryParams,
 };

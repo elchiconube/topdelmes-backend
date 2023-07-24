@@ -1,6 +1,7 @@
 const axios = require("axios");
 const axiosConfig = require("../utils/axiosConfig");
 const slugify = require("../utils/slugify");
+const { removeQueryParams } = require("../utils/helper");
 
 const logError = (error, context = "") => {
   console.error(`Error ${context}`);
@@ -231,18 +232,16 @@ const getPlatformFromStrapi = async (title) => {
 };
 
 const checkIfReviewExistOnStrapi = async (reviewUrl) => {
+  const url = removeQueryParams(reviewUrl);
   try {
     let response = await axios.get(
-      `${process.env.STRAPI_URL}/reviews?filters[url][$eq]=${reviewUrl}`,
+      `${process.env.STRAPI_URL}/reviews?filters[url][$eq]=${url}`,
       axiosConfig
     );
 
     return !response.data.data.length > 0;
   } catch (error) {
-    logError(
-      error,
-      `checking if review exists on Strapi with URL ${reviewUrl}`
-    );
+    logError(error, `checking if review exists on Strapi with URL ${url}`);
     return true;
   }
 };
