@@ -120,11 +120,11 @@ const runYearlyUpdate = async () => {
 
 // UPDATE SERVICES
 // startScrapingByYearService();
-runYearlyUpdate();
 
 // CURRENT RUNS
 runServicesInSequence();
 runDailyUpdate();
+runYearlyUpdate();
 
 //YEAR IA SERVICE
 //runIAYearService();

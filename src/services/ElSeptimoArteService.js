@@ -2,7 +2,6 @@ const {
   convertToMarkdown,
   logError,
   createReview,
-  removeQueryParams,
 } = require("../utils/helper");
 const axios = require("axios");
 const cheerio = require("cheerio");
@@ -13,6 +12,11 @@ const {
 } = require("./strapiService");
 const { getReviewFromAI } = require("./iaService");
 
+const removeQueryParams = (url) => {
+  let urlObj = new URL(url);
+  urlObj.search = "";
+  return urlObj.toString();
+};
 const checkUrl = async () => {
   try {
     let response = await axios.get(
