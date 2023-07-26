@@ -111,7 +111,7 @@ const runYearlyUpdate = async () => {
 // startRogerEbertReviewService();
 // startMartinCidReviewService();
 // startSeriementeReviewService();
-startEspinofPeliculaService();
+// startEspinofPeliculaService();
 // startElSeptimoArteReviewService,
 
 // CLASSIC CINEMA GAVIA
@@ -122,9 +122,9 @@ startEspinofPeliculaService();
 // startScrapingByYearService();
 
 // CURRENT RUNS
-// runServicesInSequence();
-// runDailyUpdate();
-// runYearlyUpdate();
+runServicesInSequence();
+runDailyUpdate();
+runYearlyUpdate();
 
 //YEAR IA SERVICE
 //runIAYearService();
