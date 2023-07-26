@@ -1,7 +1,12 @@
 const axios = require("axios");
 const axiosConfig = require("../utils/axiosConfig");
 const slugify = require("../utils/slugify");
-const { removeQueryParams } = require("../utils/helper");
+
+const removeQueryParams = (url) => {
+  let urlObj = new URL(url);
+  urlObj.search = "";
+  return urlObj.toString();
+};
 
 const logError = (error, context = "") => {
   console.error(`Error ${context}`);
