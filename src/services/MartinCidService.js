@@ -14,16 +14,17 @@ const { getReviewFromAI } = require("./iaService");
 
 const checkUrl = async () => {
   try {
-    let response = await axios.get("https://martincid.com/es/");
+    let response = await axios.get("https://martincid.com/en/movies/reviews-movies-en/");
+
     let $ = cheerio.load(response.data);
 
     let newItem = null;
 
     $(
-      "#wi-content > div > div > div > section.elementor-section.elementor-top-section.elementor-element.elementor-element-feed7e3.elementor-section-boxed.elementor-section-height-default.elementor-section-height-default > div > div > div > div.elementor-element.elementor-element-605b70f.align-left.pagination-align-center.elementor-widget.elementor-widget-post-grid > div > div > div"
+      "#main > div > div > div > section > div > div > div"
     ).each((i, el) => {
-      newItem = $(el).find(".thumbnail-inner a").attr("href");
-      return false; // break the loop
+      newItem = $(el).find("article .elementor-post__title a").attr("href");
+      return false;
     });
 
     return newItem;
@@ -37,11 +38,11 @@ const getReviewInfo = async (url) => {
     let response = await axios.get(url);
     let $ = cheerio.load(response.data);
 
-    const title = $(".post-title.post-item-title").text().replace(/\n/g, "");
+    const title = $("h1.elementor-heading-title").text().replace(/\n/g, "");
 
     let content = "";
 
-    $(".entry-content p").each((i, el) => {
+    $("article p").each((i, el) => {
       content += $(el)
         .text()
         .replace(/[+,]/g, "")
@@ -49,10 +50,10 @@ const getReviewInfo = async (url) => {
         .replace(/\t/g, "");
     });
 
-    const imageUrl = $(".image-element.thumbnail-inner img").attr(
-      "data-lazy-src"
+    const imageUrl = $("figure.wp-caption img").attr(
+      "data-src"
     );
-    const videoUrl = $(".rll-youtube-player").attr("data-src");
+    const videoUrl = $('iframe[data-service="youtube"]').attr("data-src-cmplz");
 
     return { title, content, imageUrl, videoUrl };
   } catch (error) {
