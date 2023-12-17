@@ -51,7 +51,7 @@ const getReviewInfo = async (url) => {
     });
 
     const imageUrl = $("figure.wp-caption img").attr(
-      "src"
+      "data-src"
     );
     const videoUrl = $('iframe[data-service="youtube"]').attr("data-src-cmplz");
 
