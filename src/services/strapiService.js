@@ -252,6 +252,7 @@ const checkIfReviewExistOnStrapi = async (reviewUrl) => {
 };
 
 const searchTopFromStrapi = async ({ month, year }) => {
+
   try {
     let url = `${process.env.STRAPI_URL}/tops?filters[$and][0][year][$eq]=${year}`;
 
@@ -265,7 +266,7 @@ const searchTopFromStrapi = async ({ month, year }) => {
 
     return response.data?.data[0];
   } catch (error) {
-    logError(error, "searching top from Strapi");
+    console.log(`No top found for ${month}/${year}`)
     return null;
   }
 };

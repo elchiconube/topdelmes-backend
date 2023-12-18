@@ -20,7 +20,8 @@ const createTop = async ({ year, month }) => {
       console.log(`Request for top ${year}/${month}  was sent successfully`);
     })
     .catch((error) => {
-      console.error(`Error creating top: ${year}/${month}`, error);
+      console.error(`Error creating top: ${year}/${month}`);
+      // console.error(error);
     });
 };
 
@@ -32,6 +33,7 @@ const dailyUpdate = async () => {
     month: month,
     year: year,
   });
+
 
   if (currentTop) {
     const imdbMovies = await scrapeIMDB({ title_type: "movie", year, month });
