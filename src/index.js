@@ -26,10 +26,6 @@ const app = express();
 
 app.use("/api", apiRoutes);
 
-const port = process.env.PORT || 8000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
 
 // Reviews services
 const runServicesInSequence = async () => {
@@ -107,26 +103,35 @@ const runYearlyUpdate = async () => {
   setTimeout(runYearlyUpdate, delay);
 };
 
-// startScrapingByMonthService();
-// startRogerEbertReviewService();
-// startMartinCidReviewService();
-// startSeriementeReviewService();
-// startEspinofPeliculaService();
-// startElSeptimoArteReviewService,
+const port = process.env.PORT || 8000;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 
-// CLASSIC CINEMA GAVIA
-//const urls = [];
-//startProcessingUrls(urls);
+  // startScrapingByMonthService();
+  // startRogerEbertReviewService();
+  // startMartinCidReviewService();
+  // startSeriementeReviewService();
+  // startEspinofPeliculaService();
+  // startElSeptimoArteReviewService,
 
-// UPDATE SERVICES
-// startScrapingByYearService();
+  // CLASSIC CINEMA GAVIA
+  //const urls = [];
+  //startProcessingUrls(urls);
 
-// CURRENT RUNS
-runServicesInSequence();
-runDailyUpdate();
-runYearlyUpdate();
+  // UPDATE SERVICES
+  // startScrapingByYearService();
 
-//YEAR IA SERVICE
-//runIAYearService();
+  // CURRENT RUNS
+  runServicesInSequence();
+  runDailyUpdate();
+  runYearlyUpdate();
+
+  //YEAR IA SERVICE
+  //runIAYearService();
+
+});
+
+
+
 
 module.exports = app;

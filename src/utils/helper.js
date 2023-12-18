@@ -25,8 +25,8 @@ const convertToMarkdown = (body, workName) => {
   return markdownContent;
 };
 
-const maxLength = (text, length = 255) => {
-  if (text.length > length) {
+const maxLength = (text = '', length = 255) => {
+  if (text?.length > length) {
     return text.slice(0, length);
   } else {
     return text;

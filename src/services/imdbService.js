@@ -21,7 +21,7 @@ const getHtml = async (url) => {
 
 const getElementData = (element, selector, attribute, transformation) => {
   const elem = element.find(selector);
-  if (elem.length > 0) {
+  if (elem?.length > 0) {
     let value = attribute ? elem.attr(attribute) : elem.text();
     if (transformation) {
       value = transformation(value);
@@ -91,19 +91,19 @@ const scrapeIMDB = async ({ title_type, year, month }) => {
     const $ = cheerio.load(html);
     const data = [];
 
-    $(".lister-item.mode-advanced").each((i, el) => {
+    $("ul.ipc-metadata-list li").each((i, el) => {
       const position = i + 1;
       const imdb_url = getElementData(
         $(el),
-        ".lister-item-header a",
+        ".ipc-title a",
         "href",
         (value) => `https://www.imdb.com${value}`
       );
       const title = getElementData(
         $(el),
-        ".lister-item-header a",
+        ".ipc-title__text",
         null,
-        (value) => value.trim()
+        (value) => value.trim().split('. ')[1]
       );
       const item = {
         imdb_id: imdb_url ? imdb_url.match(/tt\d+/)[0] : "",
@@ -111,49 +111,37 @@ const scrapeIMDB = async ({ title_type, year, month }) => {
         slug: slugify(title),
         imdb: getElementData(
           $(el),
-          ".ratings-imdb-rating",
-          "data-value",
-          (value) => parseFloat(value.trim())
+          ".dli-ratings-container > span",
+          "aria-label",
+          (value) => value?.length ? parseFloat(value.trim().split(": ")[1]?.replace(".", ",")) : 0
         ),
         description: maxLength(
           getElementData(
             $(el),
-            ".lister-item-content p:nth-of-type(2)",
+            "div.ipc-metadata-list-summary-item__c > div > div > div:nth-child(2) > div:first-child > div",
             null,
-            (value) => value.trim()
-          )
-        ),
+            (value) => value?.length ? value.trim() : '')),
         poster: getElementData(
           $(el),
-          ".lister-item-image img",
-          "loadlate",
-          updatePosterUrl
-        ),
+          ".ipc-poster__poster-image img",
+          "src",
+          updatePosterUrl),
         imdb_url: imdb_url,
         votes: getElementData(
           $(el),
-          ".sort-num_votes-visible span:nth-of-type(2)",
+          ".dli-parent > div:nth-child(2) > div:last-child",
           null,
-          (value) => parseInt(value.trim().replace(".", ""))
-        ),
-        runtime: getElementData($(el), ".runtime", null, (value) =>
-          parseInt(value.trim().replace(" min", ""))
-        ),
-        pub_year: getElementData($(el), ".lister-item-year", null, (value) =>
-          value.trim().replace("(II) ", "")
-        ),
-        genre: getElementData($(el), ".genre", null, (value) => value.trim()),
-        certificate: getElementData($(el), ".certificate", null, (value) =>
-          value.trim()
-        ),
-        metascore: getElementData($(el), ".metascore", null, (value) =>
-          parseInt(value.trim())
-        ),
+          (value) => value ? parseInt(Number(value.trim().replace(/^\D+/g, ''))) : 0),
+        duration: getElementData($(el), ".dli-title-metadata > span:nth-child(2)", null, (value) => value ? value?.trim() : ''),
+        pub_year: getElementData($(el), ".dli-title-metadata > span:first-child", null, (value) => value ? value?.trim() : ''),
+        genre: null,
+        certificate: getElementData($(el), ".dli-title-metadata > span:last-child", null, (value) => value ? value?.trim() : ''),
+        metascore: getElementData($(el), ".metacritic-score-box", null, (value) => value?.length ? parseInt(value.trim()) : 0),
         director: getElementData(
           $(el),
           ".lister-item-content p:nth-of-type(3) a:nth-of-type(1)",
           null,
-          (value) => value.trim()
+          (value) => value ? value?.trim() : ''
         ),
         type: title_type,
       };
