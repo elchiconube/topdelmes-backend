@@ -19,7 +19,6 @@ const INITIAL_MESSAGES = [
       "content": "Nombre de la obra original"
       "title-seo":"Titulo SEO para este contenido web"
       "metadescription":"Metadescripcion SEO para este contenido web"
-      "keywords":"Palabras clave para este cotenido web"
     }
     El texto de la crítica debe tener una longitud adecuada para un buen posicionamiento SEO y debe estar escrita en Español.`,
   },
