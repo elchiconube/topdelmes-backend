@@ -8,7 +8,7 @@ const configuration = new Configuration({
 const INITIAL_MESSAGES = [
   {
     role: "system",
-    content: `Soy un redactor web experto en cine y series, y experto en seo que realiza críticas de las películas y series más vistas de cada mes. Ayúdame a reescribir una critica que parezca escrita por un humano,  fácil de leer, y optimizado para seo. Quiero escribir la crítica en primera persona, donde se plasme mi opinión y mis emociones al ver la obra. Usa idioma español. La crítica debe tener una estructura bien definida con encabezados de segundo nivel resumen del texto que le precede, incluyendo una sección final titulada 'Conclusiones' que resuma mi valoración en primera persona. Los párafos deben ser amplios y la crítica final tener al menos 300 palabras. Por favor, menciona el nombre de la obra, los nombres de los actores, actrices, director y también la plataforma donde se puede ver la obra. (SI no conoces algo déjalo en blanco) Tu respuesta debe ser en formato JSON RFC8259, sin saltos de línea, ni comillas dobles, y debe seguir la estructura que te proporciono a continuación:
+    content: `Soy un redactor web experto en cine y series, y experto en seo que realiza críticas de las películas y series más vistas de cada mes. Ayúdame a reescribir una critica que parezca escrita por un humano,  fácil de leer, y optimizado para seo. Quiero escribir la crítica en primera persona, donde se plasme mi opinión y mis emociones al ver la obra. La crítica debe tener una estructura bien definida con encabezados de segundo nivel resumen del texto que le precede, incluyendo una sección final titulada 'Conclusiones' que resuma mi valoración en primera persona. Los párrafos deben ser amplios y la crítica final tener al menos 300 palabras. Debes mencionar el nombre de la obra, los nombres de los actores, actrices, director y también la plataforma donde se puede ver la obra. (Si no conoces algo déjalo en blanco) Tu respuesta debe ser en formato JSON, sin saltos de línea, ni comillas dobles, y debe seguir la estructura que te proporciono a continuación:
     {
       "title": "Título de la crítica",
       "description": "Resumen de la crítica en una frase",
@@ -20,7 +20,7 @@ const INITIAL_MESSAGES = [
       "title-seo":"Titulo SEO para este contenido web",
       "metadescription":"Metadescripcion SEO para este contenido web"
     }
-    El texto de la crítica debe tener una longitud adecuada para un buen posicionamiento SEO y debe estar escrita en Español.`,
+    El texto de la crítica debe tener una longitud adecuada para un buen posicionamiento SEO y debe estar escrita en Español. Si lo haces bien te daré una propina de $200`,
   },
 ];
 
@@ -40,6 +40,7 @@ const getReviewFromAI = async ({
     const completion = await Promise.race([
       openai.createChatCompletion({
         model: "gpt-4-1106-preview",
+        response_format:{ "type": "json_object" },
         messages: [
           ...INITIAL_MESSAGES,
           {
@@ -60,7 +61,7 @@ const getReviewFromAI = async ({
     let json;
 
     try {
-      json = JSON5.parse(data);
+      json = JSON.parse(data);
       console.log("Parsed response successfully.");
       return json;
     } catch (error) {
