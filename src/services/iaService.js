@@ -60,7 +60,7 @@ const getReviewFromAI = async ({
     let json;
 
     try {
-      json = JSON.parse(data);
+      json = JSON5.parse(data);
       console.log("Parsed response successfully.");
       return json;
     } catch (error) {
