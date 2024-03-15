@@ -10,8 +10,8 @@ const removeQueryParams = (url) => {
 
 const logError = (error, context = "") => {
   console.error(`Error ${context}`);
-  console.error(error.response?.data);
-  console.error(error.response?.status);
+  console.error(error.message);
+  // console.error(error.response?.status);
 };
 
 const updateTopDescriptionsToStrapi = async ({
@@ -251,6 +251,7 @@ const checkIfReviewExistOnStrapi = async (reviewUrl) => {
   }
 };
 
+//
 const searchTopFromStrapi = async ({ month, year }) => {
 
   try {

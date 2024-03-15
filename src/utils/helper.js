@@ -49,8 +49,7 @@ const createReviewSlug = ({ title, type, platform }) => {
 
 const logError = (error, context = "") => {
   console.error(`Error ${context}`);
-  console.error(error.response?.data);
-  console.error(error.response?.status);
+  console.error(error.message);
 };
 
 const createReview = async ({
