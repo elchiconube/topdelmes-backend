@@ -15,15 +15,15 @@ const { getReviewFromAI } = require("./iaService");
 const checkUrl = async () => {
   try {
     let response = await axios.get(
-      "https://www.espinof.com/tag/criticas-de-peliculas"
+      "https://eltelevisero.huffingtonpost.es/criticas/"
     );
     let $ = cheerio.load(response.data);
 
     let newItem = null;
 
-    $(".section-recent-list").each((i, el) => {
+    $(".site-main .listado-posts").each((i, el) => {
       newItem = $(el)
-        .find(".abstract-article .base-asset-image a")
+        .find(".entry-title a")
         .attr("href");
       return false; // break the loop
     });
@@ -39,13 +39,13 @@ const getReviewInfo = async (url) => {
     let response = await axios.get(url);
     let $ = cheerio.load(response.data);
 
-    const title = $(".post-title-featured")
+    const title = $(".entry-title")
       .text()
       .replace(/\n/g, "");
 
     let content = "";
 
-    $(".blob p").each((i, el) => {
+    $(".content__main__content p").each((i, el) => {
       content += $(el)
         .text()
         .replace(/[+,]/g, "")
@@ -54,10 +54,12 @@ const getReviewInfo = async (url) => {
     });
 
     const imageUrl = $(
-      ".asset-content picture source:nth-of-type(2)"
-    ).attr("srcset");
+      ".post-thumbnail > figure > picture > source:nth-of-type(2)"
+    ).attr("data-lazy-srcset");
 
-    const videoUrl = null;
+    const videoUrl = $(
+      "iframe[loading='lazy']"
+    ).attr("data-lazy-src");;
 
     return { title, content, imageUrl, videoUrl };
   } catch (error) {
@@ -65,12 +67,12 @@ const getReviewInfo = async (url) => {
   }
 };
 
-async function startEspinofPeliculaService() {
+async function startElTeleviseroService() {
   try {
     
     const reviewUrl = await checkUrl();
 
-    // const reviewUrl = 'https://www.espinof.com/criticas/roma-peliculas-maravillosas-decada-prodigiosa-obra-arte'
+    // const reviewUrl = 'https://eltelevisero.huffingtonpost.es/2024/03/si-te-gusto-los-bridgerton-puedes-ver-mary-george-el-culebron-palaciego-de-julianne-moore/'
 
     const isNew = await checkIfReviewExistOnStrapi(reviewUrl);
 
@@ -78,6 +80,7 @@ async function startEspinofPeliculaService() {
       console.log("Review is new:", reviewUrl);
 
       const reviewInfo = await getReviewInfo(reviewUrl);
+
       const review = await getReviewFromAI(reviewInfo);
 
       const platform = await getPlatformFromStrapi(review?.platform);
@@ -105,4 +108,4 @@ async function startEspinofPeliculaService() {
   }
 }
 
-module.exports = { startEspinofPeliculaService };
+module.exports = { startElTeleviseroService };

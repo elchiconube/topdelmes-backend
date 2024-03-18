@@ -7,6 +7,7 @@ const startFotogramasReviewService = require("./services/FotogramasService").sta
 const startRogerEbertReviewService = require("./services/RogerEbertService").startRogerEbertReviewService;
 const startMartinCidReviewService = require("./services/MartinCidService").startMartinCidReviewService;
 const startSeriementeReviewService = require("./services/SeriementeService").startSeriementeReviewService;
+const startElTeleviseroService = require("./services/ElTeleviseroService").startElTeleviseroService;
 const startEspinofPeliculaService = require("./services/EspinofPeliculasService").startEspinofPeliculaService;
 const startElSeptimoArteReviewService = require("./services/ElSeptimoArteService").startElSeptimoArteReviewService;
 const dailyUpdate = require("./services/dailyUpdateService").dailyUpdate;
@@ -17,6 +18,7 @@ const app = express();
 app.use("/api", apiRoutes);
 
 const services = [
+  { name: 'ElTeleviseroService', service: startElTeleviseroService },
   { name: 'EspinofPeliculaService', service: startEspinofPeliculaService },
   { name: 'FotogramasReviewService', service: startFotogramasReviewService },
   { name: 'RogerEbertReviewService', service: startRogerEbertReviewService },
