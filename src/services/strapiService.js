@@ -298,6 +298,7 @@ const postReviewOnStrapi = async (data) => {
 
     return response.data?.data;
   } catch (error) {
+    console.log(error.message)
     logError(error, "creating review on Strapi");
     return null;
   }

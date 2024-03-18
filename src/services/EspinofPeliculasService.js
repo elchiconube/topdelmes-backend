@@ -39,7 +39,7 @@ const getReviewInfo = async (url) => {
     let response = await axios.get(url);
     let $ = cheerio.load(response.data);
 
-    const title = $(".article-featured-title-container h1 span")
+    const title = $(".post-title-featured")
       .text()
       .replace(/\n/g, "");
 
@@ -54,7 +54,7 @@ const getReviewInfo = async (url) => {
     });
 
     const imageUrl = $(
-      ".base-wrapper-image picture source:nth-of-type(2)"
+      ".asset-content picture source:nth-of-type(2)"
     ).attr("srcset");
 
     const videoUrl = null;
@@ -67,7 +67,10 @@ const getReviewInfo = async (url) => {
 
 async function startEspinofPeliculaService() {
   try {
+    
     const reviewUrl = await checkUrl();
+
+    // const reviewUrl = 'https://www.espinof.com/criticas/reacher-adictiva-serie-amazon-violento-hard-boiled-vieja-escuela-protagonista-sobrado-musculo-carisma'
 
     const isNew = await checkIfReviewExistOnStrapi(reviewUrl);
 
@@ -89,7 +92,7 @@ async function startEspinofPeliculaService() {
           url: reviewUrl,
           content,
           contentName: review?.content,
-          author: 4,
+          author: 1,
         });
       } else {
         console.log("No content found", review);

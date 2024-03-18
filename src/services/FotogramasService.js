@@ -59,6 +59,8 @@ async function startFotogramasReviewService() {
 
     const fullUrl = `https://www.fotogramas.es${reviewUrl}`;
 
+    // const fullUrl = 'https://www.fotogramas.es/peliculas-criticas/a60037014/totem-critica-pelicula/'
+
     const isNew = await checkIfReviewExistOnStrapi(fullUrl);
 
     if (isNew) {
@@ -80,7 +82,7 @@ async function startFotogramasReviewService() {
           url: fullUrl,
           content,
           contentName: review?.content,
-          author: 1,
+          author: 4,
         });
       } else {
         console.log("No content found", review);
