@@ -17,11 +17,11 @@ const app = express();
 app.use("/api", apiRoutes);
 
 const services = [
+  { name: 'EspinofPeliculaService', service: startEspinofPeliculaService },
   { name: 'FotogramasReviewService', service: startFotogramasReviewService },
   { name: 'RogerEbertReviewService', service: startRogerEbertReviewService },
   { name: 'MartinCidReviewService', service: startMartinCidReviewService },
   { name: 'SeriementeReviewService', service: startSeriementeReviewService },
-  { name: 'EspinofPeliculaService', service: startEspinofPeliculaService },
   { name: 'ElSeptimoArteReviewService', service: startElSeptimoArteReviewService },
   // Agrega otros servicios según sea necesario...
 ];
