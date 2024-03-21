@@ -26,9 +26,9 @@ const checkUrl = async () => {
 
     let newItem = null;
 
-    $(".table_grid > tbody > tr").each((i, el) => {
+    $("#topic_container div.windowbg:not(.sticky)").each((i, el) => {
       if (i > 2) {
-        newItem = $(el).find("td.subject a").attr("href");
+        newItem = $(el).find("span.preview a").attr("href");
         return false; // break the loop
       }
     });
