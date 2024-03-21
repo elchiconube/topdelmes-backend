@@ -12,18 +12,24 @@ const {
 } = require("./strapiService");
 const { getReviewFromAI } = require("./iaService");
 
+const removeQueryParams = (url) => {
+  let urlObj = new URL(url);
+  urlObj.search = "";
+  return urlObj.toString();
+};
+
 const checkUrl = async () => {
   try {
     let response = await axios.get(
-      "https://www.espinof.com/tag/criticas-de-peliculas"
+      "https://variety.com/v/film/reviews/"
     );
     let $ = cheerio.load(response.data);
 
     let newItem = null;
 
-    $(".section-recent-list").each((i, el) => {
+    $(".o-tease-news-list").each((i, el) => {
       newItem = $(el)
-        .find(".abstract-article .base-asset-image a")
+        .find(".o-tease-list__item .c-title a")
         .attr("href");
       return false; // break the loop
     });
@@ -39,13 +45,14 @@ const getReviewInfo = async (url) => {
     let response = await axios.get(url);
     let $ = cheerio.load(response.data);
 
-    const title = $(".post-title-featured")
+    const title = $("h1.c-heading")
       .text()
-      .replace(/\n/g, "");
+      .replace(/\n/g, "")
+      .replace(/\t/g, "");
 
     let content = "";
 
-    $(".blob p").each((i, el) => {
+    $(".vy-cx-page-content p").each((i, el) => {
       content += $(el)
         .text()
         .replace(/[+,]/g, "")
@@ -54,23 +61,25 @@ const getReviewInfo = async (url) => {
     });
 
     const imageUrl = $(
-      ".asset-content picture source:nth-of-type(2)"
-    ).attr("srcset");
+      ".article-header__feature img"
+    ).attr("src");
+
+    
 
     const videoUrl = null;
 
-    return { title, content, imageUrl, videoUrl };
+    return { title, content, imageUrl: removeQueryParams(imageUrl), videoUrl };
   } catch (error) {
     logError(error, "getting review info");
   }
 };
 
-async function startEspinofPeliculasService() {
+async function startVarietyService() {
   try {
     
     const reviewUrl = await checkUrl();
 
-    // const reviewUrl = 'https://www.espinof.com/trailers/paladas-nostalgia-espectros-aterradores-guinos-a-nuevas-generaciones-trailer-cazafantasmas-imperio-helado-promete-retorno-a-origenes-franquicia'
+    // const reviewUrl = 'https://variety.com/2023/film/reviews/one-life-review-anthony-hopkins-1235719982/'
 
     const isNew = await checkIfReviewExistOnStrapi(reviewUrl);
 
@@ -105,4 +114,4 @@ async function startEspinofPeliculasService() {
   }
 }
 
-module.exports = { startEspinofPeliculasService };
+module.exports = { startVarietyService };

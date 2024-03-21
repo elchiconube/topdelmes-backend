@@ -180,6 +180,11 @@ const getContentFromStrapi = async (title) => {
       axiosConfig
     );
 
+
+    if (!response.data.data.length) {
+      return null;
+    }
+
     return {
       id: response.data?.data[0]?.id,
       type:
@@ -236,8 +241,8 @@ const getPlatformFromStrapi = async (title) => {
   }
 };
 
-const checkIfReviewExistOnStrapi = async (reviewUrl) => {
-  const url = removeQueryParams(reviewUrl);
+const checkIfReviewExistOnStrapi = async (reviewUrl, needToRemoveParamas = true) => {
+  const url = needToRemoveParamas ? removeQueryParams(reviewUrl) : reviewUrl;
   try {
     let response = await axios.get(
       `${process.env.STRAPI_URL}/reviews?filters[url][$eq]=${url}`,

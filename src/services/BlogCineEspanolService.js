@@ -12,18 +12,24 @@ const {
 } = require("./strapiService");
 const { getReviewFromAI } = require("./iaService");
 
+const removeQueryParams = (url) => {
+  let urlObj = new URL(url);
+  urlObj.search = "";
+  return urlObj.toString();
+};
+
 const checkUrl = async () => {
   try {
     let response = await axios.get(
-      "https://www.espinof.com/tag/criticas-de-peliculas"
+      "https://www.elblogdecineespanol.com/?cat=6"
     );
     let $ = cheerio.load(response.data);
 
     let newItem = null;
 
-    $(".section-recent-list").each((i, el) => {
+    $("#entries .content-area-inner article").each((i, el) => {
       newItem = $(el)
-        .find(".abstract-article .base-asset-image a")
+        .find(".entry-title a")
         .attr("href");
       return false; // break the loop
     });
@@ -37,15 +43,17 @@ const checkUrl = async () => {
 const getReviewInfo = async (url) => {
   try {
     let response = await axios.get(url);
+
     let $ = cheerio.load(response.data);
 
-    const title = $(".post-title-featured")
+    const title = $(".post-wrapper .entry-title")
       .text()
-      .replace(/\n/g, "");
+      .replace(/\n/g, "")
+      .replace(/\t/g, "");
 
     let content = "";
 
-    $(".blob p").each((i, el) => {
+    $("div.entry-content p").each((i, el) => {
       content += $(el)
         .text()
         .replace(/[+,]/g, "")
@@ -53,26 +61,29 @@ const getReviewInfo = async (url) => {
         .replace(/\t/g, "");
     });
 
+
     const imageUrl = $(
-      ".asset-content picture source:nth-of-type(2)"
-    ).attr("srcset");
+      "div.entry-content img.aligncenter"
+    ).attr("src");
+
+
 
     const videoUrl = null;
 
-    return { title, content, imageUrl, videoUrl };
+    return { title, content, imageUrl: removeQueryParams(imageUrl), videoUrl };
   } catch (error) {
     logError(error, "getting review info");
   }
 };
 
-async function startEspinofPeliculasService() {
+async function startBlogCineEspanolService() {
   try {
     
     const reviewUrl = await checkUrl();
 
-    // const reviewUrl = 'https://www.espinof.com/trailers/paladas-nostalgia-espectros-aterradores-guinos-a-nuevas-generaciones-trailer-cazafantasmas-imperio-helado-promete-retorno-a-origenes-franquicia'
+    // const reviewUrl = 'https://www.elblogdecineespanol.com/?p=73663'
 
-    const isNew = await checkIfReviewExistOnStrapi(reviewUrl);
+    const isNew = await checkIfReviewExistOnStrapi(reviewUrl, false);
 
     if (isNew) {
       console.log("Review is new:", reviewUrl);
@@ -105,4 +116,4 @@ async function startEspinofPeliculasService() {
   }
 }
 
-module.exports = { startEspinofPeliculasService };
+module.exports = { startBlogCineEspanolService };

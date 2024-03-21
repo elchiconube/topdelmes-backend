@@ -8,7 +8,9 @@ const startRogerEbertReviewService = require("./services/RogerEbertService").sta
 const startMartinCidReviewService = require("./services/MartinCidService").startMartinCidReviewService;
 const startSeriementeReviewService = require("./services/SeriementeService").startSeriementeReviewService;
 const startElTeleviseroService = require("./services/ElTeleviseroService").startElTeleviseroService;
-const startEspinofPeliculaService = require("./services/EspinofPeliculasService").startEspinofPeliculaService;
+const startEspinofPeliculasService = require("./services/EspinofPeliculasService").startEspinofPeliculasService;
+const startVarietyService = require("./services/VarietyService").startVarietyService;
+const startBlogCineEspanolService = require("./services/BlogCineEspanolService").startBlogCineEspanolService;
 const startElSeptimoArteReviewService = require("./services/ElSeptimoArteService").startElSeptimoArteReviewService;
 const dailyUpdate = require("./services/dailyUpdateService").dailyUpdate;
 const yearlyUpdate = require("./services/YearlyUpdateService").yearlyUpdate;
@@ -19,12 +21,14 @@ app.use("/api", apiRoutes);
 
 const services = [
   { name: 'ElTeleviseroService', service: startElTeleviseroService },
-  { name: 'EspinofPeliculaService', service: startEspinofPeliculaService },
+  { name: 'EspinofPeliculasService', service: startEspinofPeliculasService },
+  { name: 'VarietyService', service: startVarietyService },
   { name: 'FotogramasReviewService', service: startFotogramasReviewService },
+  { name: 'BlogCineEspanolService', service: startBlogCineEspanolService },
   { name: 'RogerEbertReviewService', service: startRogerEbertReviewService },
-  { name: 'MartinCidReviewService', service: startMartinCidReviewService },
+  // { name: 'MartinCidReviewService', service: startMartinCidReviewService },
   { name: 'SeriementeReviewService', service: startSeriementeReviewService },
-  { name: 'ElSeptimoArteReviewService', service: startElSeptimoArteReviewService },
+  // { name: 'ElSeptimoArteReviewService', service: startElSeptimoArteReviewService },
   // Agrega otros servicios según sea necesario...
 ];
 
