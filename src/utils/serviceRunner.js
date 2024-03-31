@@ -1,14 +1,16 @@
 const { getRandomDelay, msToTime } = require("./helper");
 
 const runServicesInSequence = async (services) => {
-  for (const service of services) {
-    console.log(`Starting ${service.name}...`);
-    await service.service();
-    console.log(`Finished ${service.name}.`);
+  while (true) {
+    for (const service of services) {
+      console.log(`Starting ${service.name}...`);
+      await service.service();
+      console.log(`Finished ${service.name}.`);
 
-    const delay = getRandomDelay();
-    console.log(`Waiting for ${msToTime(delay)} before starting next service.`);
-    await new Promise((resolve) => setTimeout(resolve, delay));
+      const delay = getRandomDelay();
+      console.log(`Waiting for ${msToTime(delay)} before starting next service.`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
   }
 };
 
