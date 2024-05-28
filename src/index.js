@@ -41,10 +41,10 @@ const updates = [
 const port = process.env.PORT || 8000;
 app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
-  
+
   // Inicia la secuencia de servicios
-  await runServicesInSequence(services);
-  
+  // await runServicesInSequence(services);
+
   // Inicia las actualizaciones
   updates.forEach(update => {
     runUpdates(update.service, update.name, update.isDaily);
