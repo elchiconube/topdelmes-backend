@@ -43,7 +43,7 @@ app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
 
   // Inicia la secuencia de servicios
-  // await runServicesInSequence(services);
+  await runServicesInSequence(services);
 
   // Inicia las actualizaciones
   updates.forEach(update => {
