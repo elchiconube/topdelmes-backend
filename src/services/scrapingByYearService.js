@@ -1,13 +1,7 @@
 const axios = require("axios");
 
 function startScrapingByYearService() {
-  let year = 2023;
-
-  // Verifica si la variable de entorno API_URL está definida
-  if (!process.env.API_URL) {
-    console.error("API_URL no está definida en las variables de entorno");
-    return;
-  }
+  let year = 2024;
 
   function scrapeYear() {
     const url = `${process.env.API_URL}/movie/${year}`;

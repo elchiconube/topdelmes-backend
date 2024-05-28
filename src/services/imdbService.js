@@ -86,6 +86,8 @@ const scrapeIMDB = async ({ title_type, year, month }) => {
 
   const url = buildIMDBUrl({ title_type, year, month });
 
+  console.log("Scraping IMDB:", url)
+
   try {
     const html = await getHtml(url);
     const $ = cheerio.load(html);

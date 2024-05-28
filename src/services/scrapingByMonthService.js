@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 function startScrapingService() {
-  let year = 2023;
+  let year = 2024;
   let month = 5;
 
   const interval = setInterval(() => {

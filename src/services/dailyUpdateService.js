@@ -1,5 +1,5 @@
 const axios = require("axios");
-
+require('dotenv').config();
 const {
   searchTopFromStrapi,
   manageContentOnStrapi,
@@ -29,19 +29,11 @@ const dailyUpdate = async () => {
   const year = new Date().getFullYear();
   const month = new Date().getMonth() + 1;
 
-  const currentTop = await searchTopFromStrapi({
-    month: month,
-    year: year,
-  });
-
+  const currentTop = await searchTopFromStrapi({ month, year });
 
   if (currentTop) {
     const imdbMovies = await scrapeIMDB({ title_type: "movie", year, month });
-    const imdbSeries = await scrapeIMDB({
-      title_type: "tv_series",
-      year,
-      month,
-    });
+    const imdbSeries = await scrapeIMDB({ title_type: "tv_series", year, month });
 
     const imdbData = [...imdbMovies, ...imdbSeries];
     const contents = await manageContentOnStrapi(imdbData);
@@ -57,7 +49,7 @@ const dailyUpdate = async () => {
       console.log(`Top ${month}/${year} updated!`);
     }
   } else {
-    createTop({ year, month });
+    await createTop({ year, month });
   }
 };
 

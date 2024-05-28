@@ -39,8 +39,8 @@ const getReviewFromAI = async ({
 
     const completion = await Promise.race([
       openai.createChatCompletion({
-        model: "gpt-4-1106-preview",
-        response_format:{ "type": "json_object" },
+        model: "gpt-4o",
+        response_format: { "type": "json_object" },
         messages: [
           ...INITIAL_MESSAGES,
           {
@@ -57,7 +57,7 @@ const getReviewFromAI = async ({
     console.log("Received response from AI.");
     const data = completion.data.choices[0].message?.content ?? "";
 
-    
+
     let json;
 
     try {

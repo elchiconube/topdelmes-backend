@@ -6,20 +6,33 @@ const {
   updateTopToStrapi,
 } = require("./strapiService");
 const { scrapeIMDB } = require("./imdbService");
-const createTop = async ({ year }) => {
-  const url = `${process.env.API_URL}/movie/${year}`;
 
-  console.log(`Creating top for year: ${year}...`);
 
-  axios
-    .get(url)
-    .then(() => {
-      console.log(`Request for top ${year}  was sent successfully`);
-    })
-    .catch((error) => {
-      console.error(`Error creating top: ${year}`, error);
-    });
+const createTop = async ({ year, month }) => {
+  const apiUrl = process.env.API_URL;
+  if (!apiUrl) {
+    console.error("API_URL no está definida en el archivo .env");
+    return;
+  }
+
+  const url = `${apiUrl}/movie/${year}/${String(month).padStart(2, "0")}`;
+
+  console.log(`Creating top for year: ${year}/${month}...`);
+
+  try {
+    await axios.get(url);
+    console.log(`Request for top ${year}/${month} was sent successfully`);
+  } catch (error) {
+    console.error(`Error creating top: ${year}/${month}`);
+    console.error(error.message);
+    if (error.response) {
+      console.error(`Status: ${error.response.status}`);
+      console.error(`Data: ${JSON.stringify(error.response.data)}`);
+    }
+  }
 };
+
+
 
 const yearlyUpdate = async () => {
   const year = new Date().getFullYear();
