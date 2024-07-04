@@ -49,6 +49,11 @@ const runUpdate = async (updateFunction, updateName) => {
   }
 };
 
+const runDailyUpdates = async () => {
+  await runUpdate(dailyUpdate, 'Daily Update');
+  await runUpdate(yearlyUpdate, 'Yearly Update');
+};
+
 const port = process.env.PORT || 8000;
 app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
@@ -56,19 +61,12 @@ app.listen(port, async () => {
   // Inicia la secuencia de servicios
   await runServicesInSequence(services);
 
-  // Configura las actualizaciones programadas
-  // Actualización diaria a las 00:00
-  cron.schedule('0 0 * * *', () => {
-    runUpdate(dailyUpdate, 'Daily Update');
-  });
+  // Configura la actualización diaria
+  // Se ejecuta todos los días a las 00:00
+  cron.schedule('0 0 * * *', runDailyUpdates);
 
-  // Actualización anual el 1 de enero a las 00:00
-  cron.schedule('0 0 1 1 *', () => {
-    runUpdate(yearlyUpdate, 'Yearly Update');
-  });
-
-  // Ejecuta la actualización diaria al iniciar el servidor
-  runUpdate(dailyUpdate, 'Initial Daily Update');
+  // Ejecuta las actualizaciones al iniciar el servidor
+  runDailyUpdates();
 });
 
 module.exports = app;
