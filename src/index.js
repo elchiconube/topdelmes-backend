@@ -1,19 +1,18 @@
 require('dotenv').config();
 const express = require("express");
 const apiRoutes = require("./api");
-const { runServicesInSequence, runUpdates } = require("./utils/serviceRunner");
+const { runServicesInSequence } = require("./utils/serviceRunner");
+const cron = require('node-cron');
 
 const startFotogramasReviewService = require("./services/FotogramasService").startFotogramasReviewService;
 const startRogerEbertReviewService = require("./services/RogerEbertService").startRogerEbertReviewService;
-const startMartinCidReviewService = require("./services/MartinCidService").startMartinCidReviewService;
 const startSeriementeReviewService = require("./services/SeriementeService").startSeriementeReviewService;
 const startElTeleviseroService = require("./services/ElTeleviseroService").startElTeleviseroService;
 const startEspinofPeliculasService = require("./services/EspinofPeliculasService").startEspinofPeliculasService;
 const startVarietyService = require("./services/VarietyService").startVarietyService;
 const startBlogCineEspanolService = require("./services/BlogCineEspanolService").startBlogCineEspanolService;
-const startElSeptimoArteReviewService = require("./services/ElSeptimoArteService").startElSeptimoArteReviewService;
-const dailyUpdate = require("./services/dailyUpdateService").dailyUpdate;
-const yearlyUpdate = require("./services/YearlyUpdateService").yearlyUpdate;
+const { dailyUpdate } = require("./services/dailyUpdateService");
+const { yearlyUpdate } = require("./services/YearlyUpdateService");
 
 const app = express();
 
@@ -26,17 +25,29 @@ const services = [
   { name: 'FotogramasReviewService', service: startFotogramasReviewService },
   { name: 'BlogCineEspanolService', service: startBlogCineEspanolService },
   { name: 'RogerEbertReviewService', service: startRogerEbertReviewService },
-  // { name: 'MartinCidReviewService', service: startMartinCidReviewService },
   { name: 'SeriementeReviewService', service: startSeriementeReviewService },
-  // { name: 'ElSeptimoArteReviewService', service: startElSeptimoArteReviewService },
-  // Agrega otros servicios según sea necesario...
 ];
 
-const updates = [
-  { name: 'DailyUpdate', service: dailyUpdate, isDaily: true },
-  { name: 'YearlyUpdate', service: yearlyUpdate, isDaily: false },
-  // Agrega otras actualizaciones según sea necesario...
-];
+let isUpdating = false;
+
+const runUpdate = async (updateFunction, updateName) => {
+  if (isUpdating) {
+    console.log(`${updateName} skipped - another update is in progress`);
+    return;
+  }
+
+  isUpdating = true;
+  console.log(`Starting ${updateName}...`);
+
+  try {
+    await updateFunction();
+    console.log(`${updateName} completed successfully`);
+  } catch (error) {
+    console.error(`Error in ${updateName}:`, error);
+  } finally {
+    isUpdating = false;
+  }
+};
 
 const port = process.env.PORT || 8000;
 app.listen(port, async () => {
@@ -45,10 +56,19 @@ app.listen(port, async () => {
   // Inicia la secuencia de servicios
   await runServicesInSequence(services);
 
-  // Inicia las actualizaciones
-  updates.forEach(update => {
-    runUpdates(update.service, update.name, update.isDaily);
+  // Configura las actualizaciones programadas
+  // Actualización diaria a las 00:00
+  cron.schedule('0 0 * * *', () => {
+    runUpdate(dailyUpdate, 'Daily Update');
   });
+
+  // Actualización anual el 1 de enero a las 00:00
+  cron.schedule('0 0 1 1 *', () => {
+    runUpdate(yearlyUpdate, 'Yearly Update');
+  });
+
+  // Ejecuta la actualización diaria al iniciar el servidor
+  runUpdate(dailyUpdate, 'Initial Daily Update');
 });
 
 module.exports = app;
