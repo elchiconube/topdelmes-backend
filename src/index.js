@@ -50,7 +50,7 @@ const runUpdate = async (updateFunction, updateName) => {
 };
 
 const runDailyUpdates = async () => {
-  await runUpdate(dailyUpdate, 'Daily Update');
+  // await runUpdate(dailyUpdate, 'Daily Update');
   await runUpdate(yearlyUpdate, 'Yearly Update');
 };
 
