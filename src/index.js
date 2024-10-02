@@ -50,7 +50,7 @@ const runUpdate = async (updateFunction, updateName) => {
 };
 
 const runDailyUpdates = async () => {
-  // await runUpdate(dailyUpdate, 'Daily Update');
+  await runUpdate(dailyUpdate, 'Daily Update');
   await runUpdate(yearlyUpdate, 'Yearly Update');
 };
 
@@ -58,8 +58,8 @@ const port = process.env.PORT || 8000;
 app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
 
-  // Inicia la secuencia de servicios
-  await runServicesInSequence(services);
+  // Run services in sequence without blocking
+  setImmediate(() => runServicesInSequence(services));
 
   // Configura la actualización diaria
   // Se ejecuta todos los días a las 00:00
