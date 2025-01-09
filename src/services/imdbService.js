@@ -36,11 +36,16 @@ const getElementData = (element, selector, attribute, transformation) => {
   return null;
 };
 
+
 const updatePosterUrl = (url) => {
-  const pattern = /_V1_.*\.jpg/;
-  const newSuffix = "_V1_SY1000_CR0,0,674,1000_AL_.jpg";
-  const newUrl = url.replace(pattern, newSuffix);
-  return newUrl;
+  if (!url) return null;
+  
+  // Patrón para detectar y reemplazar el sufijo de tamaño
+  const pattern = /._V1.*\.jpg/;
+  // Sufijo para obtener la imagen de alta calidad
+  const newSuffix = '._V1_FMjpg_UX674_.jpg';
+  
+  return url.replace(pattern, newSuffix);
 };
 
 const isValidDateForSeries = (year, month) => {
@@ -69,18 +74,6 @@ const buildIMDBUrl = ({ title_type, month, year }) => {
   }
   
   return `https://www.imdb.com/search/title/?title_type=${title_type}&year=${year}`;
-};
-
-const getHighestQualityImage = (srcset) => {
-  if (!srcset) return null;
-  
-  // Dividir el srcset en sus partes
-  const images = srcset.split(',').map(str => str.trim());
-  
-  // Encontrar la URL con la mayor resolución (el último elemento suele ser el más grande)
-  const highestQuality = images[images.length - 1].split(' ')[0];
-  
-  return highestQuality;
 };
 
 const scrapeIMDB = async ({ title_type, year, month }) => {
@@ -114,8 +107,9 @@ const scrapeIMDB = async ({ title_type, year, month }) => {
       const description = maxLength($(el).find('.ipc-html-content-inner-div').text().trim());
 
       // Poster ahora está en una estructura diferente
-      const poster = getHighestQualityImage($(el).find('.ipc-image').attr('srcset')) || $(el).find('.ipc-image').attr('src');
-
+      const posterBase = $(el).find('.ipc-image').attr('src');
+      const poster = updatePosterUrl(posterBase);
+            
       // Metadata como duración y año están en spans con clase específica
       const metadata = $(el).find('.dli-title-metadata-item');
       const pub_year = metadata.first().text().trim();
