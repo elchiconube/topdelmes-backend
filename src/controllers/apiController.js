@@ -52,7 +52,7 @@ exports.handleTopRequest = async (req, res) => {
       );
       res.send(result);
     } else {
-      const imdbMovies = await scrapeIMDB({ title_type: "movie", year, month });
+      const imdbMovies = await scrapeIMDB({ title_type: "feature", year, month });
       const imdbSeries = await scrapeIMDB({
         title_type: "tv_series",
         year,

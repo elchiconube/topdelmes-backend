@@ -7,14 +7,19 @@ const getHtml = async (url) => {
   try {
     const response = await axios.get(url, {
       headers: {
-        "User-Agent":
-          "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1",
-        "Accept-Language": "es-ES,es;q=0.8,en-US;q=0.6,en;q=0.4",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Connection": "keep-alive"
       },
+      timeout: 10000
     });
     return response.data;
   } catch (error) {
-    console.error(`Error al obtener el HTML de la url ${url}: ${error}`);
+    console.error(`Error fetching IMDB data: ${error.message}`);
+    if (error.response) {
+      console.error(`Status: ${error.response.status}`);
+    }
     throw error;
   }
 };
@@ -50,112 +55,86 @@ const isValidDateForSeries = (year, month) => {
 };
 
 const buildIMDBUrl = ({ title_type, month, year }) => {
-  let start_date = "";
-  let end_date = "";
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1;
+  const currentDay = currentDate.getDate();
+  
+  // Si estamos en el año actual, usamos release_date para obtener un rango específico
+  if (year === currentYear) {
+    let start_date = `${year}-01-01`;
+    let end_date = `${year}-${String(currentMonth).padStart(2, "0")}-${String(currentDay).padStart(2, "0")}`;
 
-  if (month && year) {
-    const currentDate = new Date();
-    const currentDay = currentDate.getDate();
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentYear = currentDate.getFullYear();
-
-    start_date = `${year}-${month}-01`;
-    if (year == currentYear && month == currentMonth) {
-      end_date = `${year}-${month}-${currentDay}`;
-    } else {
-      end_date = `${year}-${month}-${new Date(year, month, 0).getDate()}`;
-    }
+    return `https://www.imdb.com/search/title/?title_type=${title_type}&release_date=${start_date},${end_date}&sort=release_date,desc`;
   }
-
-  let imdbUrl = "https://www.imdb.com/search/title/?title_type=" + title_type;
-
-  if (start_date && end_date) {
-    imdbUrl += "&release_date=" + start_date + "," + end_date;
-    imdbUrl += "&start=1&ref_=adv_nxt";
-  } else if (year) {
-    imdbUrl += "&year=" + year;
-  }
-
-  return imdbUrl;
+  
+  return `https://www.imdb.com/search/title/?title_type=${title_type}&year=${year}`;
 };
 
 const scrapeIMDB = async ({ title_type, year, month }) => {
-  if (title_type === "tv_series" && !isValidDateForSeries(year, month)) {
-    return [];
-  }
-
   const url = buildIMDBUrl({ title_type, year, month });
-
-  console.log("Scraping IMDB:", url)
+  console.log(`Scraping IMDB with URL: ${url}`);
 
   try {
     const html = await getHtml(url);
     const $ = cheerio.load(html);
     const data = [];
 
-    $("ul.ipc-metadata-list li").each((i, el) => {
-      const position = i + 1;
-      const imdb_url = getElementData(
-        $(el),
-        ".ipc-title a",
-        "href",
-        (value) => `https://www.imdb.com${value}`
-      );
-      const title = getElementData(
-        $(el),
-        ".ipc-title__text",
-        null,
-        (value) => value.trim().split('. ')[1]
-      );
+    // Verificar si hay resultados usando el nuevo selector
+    const listItems = $(".ipc-metadata-list-summary-item");
+    if (listItems.length === 0) {
+      console.log(`No results found for ${title_type} in ${year}${month ? '/' + month : ''}`);
+      return [];
+    }
+
+    listItems.each((i, el) => {
+      // Extraer la información usando los nuevos selectores
+      const title = $(el).find('.ipc-title__text').text().replace(/^\d+\.\s/, '').trim();
+      const imdb_url = 'https://www.imdb.com' + $(el).find('.ipc-title-link-wrapper').attr('href');
+      const imdb_id = imdb_url.match(/tt\d+/)?.[0] || '';
+      
+      // Rating y votes están dentro de .ipc-rating-star--imdb
+      const rating = parseFloat($(el).find('.ipc-rating-star--imdb .ipc-rating-star--rating').text()) || 0;
+      const votes_text = $(el).find('.ipc-rating-star--voteCount').text().replace(/[^\d]/g, '');
+      const votes = parseInt(votes_text) || 0;
+
+      // Descripción ahora está en .ipc-html-content-inner-div
+      const description = maxLength($(el).find('.ipc-html-content-inner-div').text().trim());
+
+      // Poster ahora está en una estructura diferente
+      const poster = $(el).find('.ipc-image').attr('src');
+
+      // Metadata como duración y año están en spans con clase específica
+      const metadata = $(el).find('.dli-title-metadata-item');
+      const pub_year = metadata.first().text().trim();
+      const duration = metadata.eq(1).text().trim();
+      const certificate = metadata.eq(2).text().trim();
+
       const item = {
-        imdb_id: imdb_url ? imdb_url.match(/tt\d+/)[0] : "",
-        title: title,
+        imdb_id,
+        title,
         slug: slugify(title),
-        imdb: getElementData(
-          $(el),
-          ".dli-ratings-container > span",
-          "aria-label",
-          (value) => value?.length ? parseFloat(value.trim().split(": ")[1]?.replace(".", ",")) : 0
-        ),
-        description: maxLength(
-          getElementData(
-            $(el),
-            "div.ipc-metadata-list-summary-item__c > div > div > div:nth-child(2) > div:first-child > div",
-            null,
-            (value) => value?.length ? value.trim() : '')),
-        poster: getElementData(
-          $(el),
-          ".ipc-poster__poster-image img",
-          "src",
-          updatePosterUrl),
-        imdb_url: imdb_url,
-        votes: getElementData(
-          $(el),
-          ".dli-parent > div:nth-child(2) > div:last-child",
-          null,
-          (value) => value ? parseInt(Number(value.trim().replace(/^\D+/g, ''))) : 0),
-        duration: getElementData($(el), ".dli-title-metadata > span:nth-child(2)", null, (value) => value ? value?.trim() : ''),
-        pub_year: getElementData($(el), ".dli-title-metadata > span:first-child", null, (value) => value ? value?.trim() : ''),
-        genre: null,
-        certificate: getElementData($(el), ".dli-title-metadata > span:last-child", null, (value) => value ? value?.trim() : ''),
-        metascore: getElementData($(el), ".metacritic-score-box", null, (value) => value?.length ? parseInt(value.trim()) : 0),
-        director: getElementData(
-          $(el),
-          ".lister-item-content p:nth-of-type(3) a:nth-of-type(1)",
-          null,
-          (value) => value ? value?.trim() : ''
-        ),
+        imdb: rating,
+        description,
+        poster,
+        imdb_url,
+        votes,
+        duration,
+        pub_year,
+        certificate,
         type: title_type,
       };
 
       data.push(item);
     });
 
+    console.log(`Found ${data.length} items for ${title_type} in ${year}${month ? '/' + month : ''}`);
     return data;
   } catch (error) {
-    console.error("Error al hacer scrape a IMDB:", error);
+    console.error(`Error scraping IMDB: ${error.message}`);
     return [];
   }
 };
+
 
 module.exports = { scrapeIMDB };
