@@ -4,69 +4,134 @@ const apiRoutes = require("./api");
 const { runServicesInSequence } = require("./utils/serviceRunner");
 const cron = require('node-cron');
 
-const startFotogramasReviewService = require("./services/FotogramasService").startFotogramasReviewService;
-const startRogerEbertReviewService = require("./services/RogerEbertService").startRogerEbertReviewService;
-const startSeriementeReviewService = require("./services/SeriementeService").startSeriementeReviewService;
-const startElTeleviseroService = require("./services/ElTeleviseroService").startElTeleviseroService;
-const startEspinofPeliculasService = require("./services/EspinofPeliculasService").startEspinofPeliculasService;
-const startVarietyService = require("./services/VarietyService").startVarietyService;
-const startBlogCineEspanolService = require("./services/BlogCineEspanolService").startBlogCineEspanolService;
+// Servicios de revisión
+const services = {
+  ElTelevisero: require("./services/ElTeleviseroService").startElTeleviseroService,
+  EspinofPeliculas: require("./services/EspinofPeliculasService").startEspinofPeliculasService,
+  Variety: require("./services/VarietyService").startVarietyService,
+  Fotogramas: require("./services/FotogramasService").startFotogramasReviewService,
+  BlogCineEspanol: require("./services/BlogCineEspanolService").startBlogCineEspanolService,
+  RogerEbert: require("./services/RogerEbertService").startRogerEbertReviewService,
+  Serialmente: require("./services/SeriementeService").startSeriementeReviewService,
+};
+
+// Servicios de actualización
 const { dailyUpdate } = require("./services/dailyUpdateService");
 const { yearlyUpdate } = require("./services/YearlyUpdateService");
 
 const app = express();
 
+// Middleware
+app.use(express.json());
 app.use("/api", apiRoutes);
 
-const services = [
-  { name: 'ElTeleviseroService', service: startElTeleviseroService },
-  { name: 'EspinofPeliculasService', service: startEspinofPeliculasService },
-  { name: 'VarietyService', service: startVarietyService },
-  { name: 'FotogramasReviewService', service: startFotogramasReviewService },
-  { name: 'BlogCineEspanolService', service: startBlogCineEspanolService },
-  { name: 'RogerEbertReviewService', service: startRogerEbertReviewService },
-  { name: 'SeriementeReviewService', service: startSeriementeReviewService },
-];
-
-let isUpdating = false;
+// Control de actualizaciones concurrentes
+const updateLock = {
+  isUpdating: false,
+  lastUpdate: null,
+  currentOperation: null
+};
 
 const runUpdate = async (updateFunction, updateName) => {
-  if (isUpdating) {
-    console.log(`${updateName} skipped - another update is in progress`);
+  if (updateLock.isUpdating) {
+    console.log(`${updateName} skipped - ${updateLock.currentOperation} is in progress since ${updateLock.lastUpdate}`);
     return;
   }
 
-  isUpdating = true;
-  console.log(`Starting ${updateName}...`);
+  updateLock.isUpdating = true;
+  updateLock.lastUpdate = new Date().toISOString();
+  updateLock.currentOperation = updateName;
 
   try {
+    console.log(`Starting ${updateName} at ${updateLock.lastUpdate}`);
     await updateFunction();
-    console.log(`${updateName} completed successfully`);
+    console.log(`${updateName} completed successfully at ${new Date().toISOString()}`);
   } catch (error) {
     console.error(`Error in ${updateName}:`, error);
+    // Notificar el error (aquí podrías agregar integración con un servicio de monitoreo)
   } finally {
-    isUpdating = false;
+    updateLock.isUpdating = false;
+    updateLock.currentOperation = null;
   }
 };
 
 const runDailyUpdates = async () => {
-  await runUpdate(dailyUpdate, 'Daily Update');
-  await runUpdate(yearlyUpdate, 'Yearly Update');
+  try {
+    // Primero ejecutamos la actualización diaria
+    await runUpdate(dailyUpdate, 'Daily Update');
+    
+    // Si la actualización diaria fue exitosa, ejecutamos la actualización anual
+    if (!updateLock.isUpdating) {
+      await runUpdate(yearlyUpdate, 'Yearly Update');
+    }
+  } catch (error) {
+    console.error('Error in updates sequence:', error);
+  }
 };
 
-const port = process.env.PORT || 8000;
-app.listen(port, async () => {
-  console.log(`Server is running on port ${port}`);
+const runReviewServices = async () => {
+  const servicesList = Object.entries(services).map(([name, service]) => ({
+    name,
+    service
+  }));
 
-  // Inicia la secuencia de servicios
-  // await runServicesInSequence(services);
+  try {
+    await runServicesInSequence(servicesList);
+  } catch (error) {
+    console.error('Error running review services:', error);
+  }
+};
 
-  // Configura la actualización diaria
-  // Se ejecuta todos los días a las 00:00
-  // cron.schedule('0 0 * * *', runDailyUpdates);
+const startServer = async () => {
+  const port = process.env.PORT || 8000;
+  
+  try {
+    // Iniciar el servidor
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
 
-  // Ejecuta las actualizaciones al iniciar el servidor
-  runDailyUpdates();
+    // Configurar los cron jobs
+    // Actualizaciones diarias a las 00:00
+    cron.schedule('0 0 * * *', runDailyUpdates, {
+      scheduled: true,
+      timezone: "Europe/Madrid"
+    });
+
+    // Servicios de revisión cada 6 horas
+    cron.schedule('0 */6 * * *', runReviewServices, {
+      scheduled: true,
+      timezone: "Europe/Madrid"
+    });
+
+    // Ejecutar actualizaciones iniciales
+    console.log('Running initial updates...');
+    await runDailyUpdates();
+    
+    // Ejecutar servicios de revisión iniciales
+    console.log('Starting review services...');
+    await runReviewServices();
+
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+// Manejo de errores no capturados
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+// Iniciar el servidor
+startServer().catch(error => {
+  console.error('Failed to start the application:', error);
+  process.exit(1);
 });
 
 module.exports = app;
