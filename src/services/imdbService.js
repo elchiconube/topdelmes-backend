@@ -71,6 +71,18 @@ const buildIMDBUrl = ({ title_type, month, year }) => {
   return `https://www.imdb.com/search/title/?title_type=${title_type}&year=${year}`;
 };
 
+const getHighestQualityImage = (srcset) => {
+  if (!srcset) return null;
+  
+  // Dividir el srcset en sus partes
+  const images = srcset.split(',').map(str => str.trim());
+  
+  // Encontrar la URL con la mayor resolución (el último elemento suele ser el más grande)
+  const highestQuality = images[images.length - 1].split(' ')[0];
+  
+  return highestQuality;
+};
+
 const scrapeIMDB = async ({ title_type, year, month }) => {
   const url = buildIMDBUrl({ title_type, year, month });
   console.log(`Scraping IMDB with URL: ${url}`);
@@ -102,7 +114,7 @@ const scrapeIMDB = async ({ title_type, year, month }) => {
       const description = maxLength($(el).find('.ipc-html-content-inner-div').text().trim());
 
       // Poster ahora está en una estructura diferente
-      const poster = $(el).find('.ipc-image').attr('src');
+      const poster = getHighestQualityImage($(el).find('.ipc-image').attr('srcset')) || $(el).find('.ipc-image').attr('src');
 
       // Metadata como duración y año están en spans con clase específica
       const metadata = $(el).find('.dli-title-metadata-item');
