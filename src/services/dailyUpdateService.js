@@ -12,7 +12,7 @@ const createTop = async ({ year, month }) => {
     "0"
   )}`;
 
-  console.log(`Creating top for year: ${year}/${month}...`);
+  console.log(`Creating top for year (dailyUpdate): ${year}/${month}...`);
 
   axios
     .get(url)
@@ -32,7 +32,7 @@ const dailyUpdate = async () => {
   const currentTop = await searchTopFromStrapi({ month, year });
 
   if (currentTop) {
-    const imdbMovies = await scrapeIMDB({ title_type: "movie", year, month });
+    const imdbMovies = await scrapeIMDB({ title_type: "feature", year, month });
     const imdbSeries = await scrapeIMDB({ title_type: "tv_series", year, month });
 
     const imdbData = [...imdbMovies, ...imdbSeries];

@@ -50,7 +50,7 @@ const runUpdate = async (updateFunction, updateName) => {
 };
 
 const runDailyUpdates = async () => {
-  // await runUpdate(dailyUpdate, 'Daily Update');
+  await runUpdate(dailyUpdate, 'Daily Update');
   await runUpdate(yearlyUpdate, 'Yearly Update');
 };
 
@@ -59,11 +59,11 @@ app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
 
   // Inicia la secuencia de servicios
-  await runServicesInSequence(services);
+  // await runServicesInSequence(services);
 
   // Configura la actualización diaria
   // Se ejecuta todos los días a las 00:00
-  cron.schedule('0 0 * * *', runDailyUpdates);
+  // cron.schedule('0 0 * * *', runDailyUpdates);
 
   // Ejecuta las actualizaciones al iniciar el servidor
   runDailyUpdates();
