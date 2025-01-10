@@ -52,28 +52,37 @@ const isValidDateForSeries = (year, month) => {
   const yearInt = parseInt(year);
   const monthInt = parseInt(month);
 
-  if (yearInt < 1990 || (yearInt === 1990 && monthInt < 1)) {
-    return false;
-  }
-
-  return true;
+  return !(yearInt < 1990 || (yearInt === 1990 && monthInt < 1));
 };
 
-const buildIMDBUrl = ({ title_type, month, year }) => {
+const buildIMDBUrl = ({ title_type, year, month }) => {
+  // Obtener la fecha actual
   const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1;
-  const currentDay = currentDate.getDate();
   
-  // Si estamos en el año actual, usamos release_date para obtener un rango específico
-  if (year === currentYear) {
-    let start_date = `${year}-01-01`;
-    let end_date = `${year}-${String(currentMonth).padStart(2, "0")}-${String(currentDay).padStart(2, "0")}`;
+  // Crear fecha de un año atrás
+  const oneYearAgo = new Date(currentDate);
+  oneYearAgo.setFullYear(currentDate.getFullYear() - 1);
 
-    return `https://www.imdb.com/search/title/?title_type=${title_type}&release_date=${start_date},${end_date}&sort=release_date,desc`;
-  }
+  // Formatear las fechas en el formato requerido YYYY-MM-DD
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const start_date = formatDate(oneYearAgo);
+  const end_date = formatDate(currentDate);
+
+  // Ajustar el title_type según sea película o serie
+  const adjustedTitleType = title_type === 'movie' ? 'feature' : 'tv_series';
+
+  // Construir la URL
+  const url = `https://www.imdb.com/search/title/?title_type=${adjustedTitleType}&release_date=${start_date},${end_date}&sort=user_rating,desc`;
   
-  return `https://www.imdb.com/search/title/?title_type=${title_type}&year=${year}`;
+  console.log(`Generated URL for ${title_type}: ${url}`);
+  
+  return url;
 };
 
 const scrapeIMDB = async ({ title_type, year, month }) => {
@@ -96,7 +105,8 @@ const scrapeIMDB = async ({ title_type, year, month }) => {
       // Extraer la información usando los nuevos selectores
       const title = $(el).find('.ipc-title__text').text().replace(/^\d+\.\s/, '').trim();
       const imdb_url = 'https://www.imdb.com' + $(el).find('.ipc-title-link-wrapper').attr('href');
-      const imdb_id = imdb_url.match(/tt\d+/)?.[0] || '';
+      const imdbMatch = /tt\d+/.exec(imdb_url);
+      const imdb_id = imdbMatch ? imdbMatch[0] : '';
       
       // Rating y votes están dentro de .ipc-rating-star--imdb
       const rating = parseFloat($(el).find('.ipc-rating-star--imdb .ipc-rating-star--rating').text()) || 0;
