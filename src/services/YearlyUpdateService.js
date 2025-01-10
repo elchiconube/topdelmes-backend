@@ -19,7 +19,7 @@ const yearlyUpdate = async () => {
     if (currentTop) {
       console.log(`Updating existing top for ${year}...`);
       
-      const imdbMovies = await scrapeIMDB({ title_type: "feature", year });
+      const imdbMovies = await scrapeIMDB({ title_type: "movie", year });
       const imdbSeries = await scrapeIMDB({ title_type: "tv_series", year });
 
       const imdbData = [...imdbMovies, ...imdbSeries].sort(
@@ -42,7 +42,7 @@ const yearlyUpdate = async () => {
     } else {
       console.log(`Creating new top for ${year}...`);
       
-      const imdbMovies = await scrapeIMDB({ title_type: "feature", year });
+      const imdbMovies = await scrapeIMDB({ title_type: "movie", year });
       const imdbSeries = await scrapeIMDB({ title_type: "tv_series", year });
 
       const imdbData = [...imdbMovies, ...imdbSeries].sort(
