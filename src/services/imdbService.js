@@ -78,7 +78,7 @@ const buildIMDBUrl = ({ title_type, year, month }) => {
   const adjustedTitleType = title_type === 'movie' ? 'feature' : 'tv_series';
 
   // Construir la URL
-  const url = `https://www.imdb.com/search/title/?title_type=${adjustedTitleType}&release_date=${start_date},${end_date}&sort=user_rating,desc`;
+  const url = `https://www.imdb.com/search/title/?title_type=${adjustedTitleType}&release_date=${start_date},${end_date}`;
   
   console.log(`Generated URL for ${title_type}: ${url}`);
   
